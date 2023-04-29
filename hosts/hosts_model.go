@@ -6,9 +6,9 @@ import (
 )
 
 type staticDhcpHost struct {
-	MacAddress string `json:"mac_address"`
-	IPAddress  string `json:"ip_address"`
-	HostName   string `json:"hostname"`
+	MacAddress string `json:"mac_address" binding:"required,mac"`
+	IPAddress  string `json:"ip_address" binding:"required,ipv4"`
+	HostName   string `json:"hostname" binding:"required,hostname"`
 }
 
 func (h *staticDhcpHost) FromConfig(config string) error {

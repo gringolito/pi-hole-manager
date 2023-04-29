@@ -10,7 +10,8 @@ const STATIC_HOSTS_FILE_PATH string = "./04-pihole-static-dhcp.conf"
 func main() {
 	router := gin.Default()
 
-	hosts.Init(router, STATIC_HOSTS_FILE_PATH)
+	h := hosts.NewController(STATIC_HOSTS_FILE_PATH)
+	h.SetupRoutes(router)
 
 	router.Run("localhost:8080")
 }

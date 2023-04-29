@@ -69,3 +69,105 @@ func (r *hostRepository) save(hosts []staticDhcpHost) error {
 
 	return os.WriteFile(r.staticHostsFilePath, []byte(strings.Join(config, "\n")), os.FileMode(0644))
 }
+
+func (r *hostRepository) Find(host staticDhcpHost) (*staticDhcpHost, error) {
+	hosts, err := r.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, h := range hosts {
+		if h == host {
+			return &h, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func (r *hostRepository) FindByMac(macAddress string) (*staticDhcpHost, error) {
+	hosts, err := r.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, host := range hosts {
+		if host.MacAddress == macAddress {
+			return &host, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func (r *hostRepository) FindByIP(ipAddress string) (*staticDhcpHost, error) {
+	hosts, err := r.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, host := range hosts {
+		if host.IPAddress == ipAddress {
+			return &host, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func (r *hostRepository) Remove(host staticDhcpHost) (*staticDhcpHost, error) {
+	hosts, err := r.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, h := range hosts {
+		if h != host {
+			continue
+		}
+
+		hosts = append(hosts[:i], hosts[i+1:]...)
+		err = r.save(hosts)
+		return &h, err
+	}
+
+	return nil, nil
+}
+
+func (r *hostRepository) RemoveByMac(macAddress string) (*staticDhcpHost, error) {
+	hosts, err := r.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, host := range hosts {
+		if host.MacAddress != macAddress {
+			continue
+		}
+
+		hosts = append(hosts[:i], hosts[i+1:]...)
+		err = r.save(hosts)
+		return &host, err
+	}
+
+	return nil, nil
+}
+
+func (r *hostRepository) RemoveByIP(ipAddress string) (*staticDhcpHost, error) {
+	hosts, err := r.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, host := range hosts {
+		if host.IPAddress != ipAddress {
+			continue
+		}
+
+		hosts = append(hosts[:i], hosts[i+1:]...)
+		err = r.save(hosts)
+		return &host, err
+	}
+
+	return nil, nil
+}
