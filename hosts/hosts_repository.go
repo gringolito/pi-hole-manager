@@ -50,3 +50,22 @@ func (r *hostRepository) parse(file *os.File) ([]staticDhcpHost, error) {
 
 	return hosts, nil
 }
+
+func (r *hostRepository) Insert(host staticDhcpHost) error {
+	hosts, err := r.Load()
+	if err != nil {
+		return err
+	}
+
+	hosts = append(hosts, host)
+	return r.save(hosts)
+}
+
+func (r *hostRepository) save(hosts []staticDhcpHost) error {
+	config := []string{}
+	for _, host := range hosts {
+		config = append(config, host.ToConfig())
+	}
+
+	return os.WriteFile(r.staticHostsFilePath, []byte(strings.Join(config, "\n")), os.FileMode(0644))
+}

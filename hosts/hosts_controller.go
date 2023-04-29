@@ -33,12 +33,14 @@ func (h *Controller) getStaticHosts(c *gin.Context) {
 
 func (h *Controller) addStaticHost(c *gin.Context) {
 	var newHost staticDhcpHost
-
 	if err := c.BindJSON(&newHost); err != nil {
 		return
 	}
 
-	// hosts = append(hosts, newHost)
+	if err := h.service.addStaticHost(newHost); err != nil {
+		return
+	}
+
 	c.IndentedJSON(http.StatusCreated, newHost)
 }
 

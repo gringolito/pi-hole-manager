@@ -11,3 +11,7 @@ func NewService(staticHostsFilePath string) hostService {
 func (s *hostService) getStaticHosts() ([]staticDhcpHost, error) {
 	return s.repository.Load()
 }
+
+func (s *hostService) addStaticHost(host staticDhcpHost) error {
+	return s.repository.Insert(host)
+}

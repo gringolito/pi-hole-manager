@@ -26,3 +26,7 @@ func (h *staticDhcpHost) FromConfig(config string) error {
 
 	return nil
 }
+
+func (h *staticDhcpHost) ToConfig() string {
+	return fmt.Sprintf("dhcp-host=%s,%s,%s", h.MacAddress, h.IPAddress, h.HostName)
+}
