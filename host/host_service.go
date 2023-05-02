@@ -1,4 +1,4 @@
-package hosts
+package host
 
 import "fmt"
 
@@ -10,7 +10,7 @@ func NewService(staticHostsFilePath string) hostService {
 	return hostService{repository: NewRepository(staticHostsFilePath)}
 }
 
-func (s *hostService) AddStaticHost(host staticDhcpHost) error {
+func (s *hostService) AddStaticHost(host *staticDhcpHost) error {
 	sameMacHost, err := s.repository.FindByMac(host.MacAddress)
 	if err != nil {
 		return err
@@ -27,10 +27,10 @@ func (s *hostService) AddStaticHost(host staticDhcpHost) error {
 		return fmt.Errorf("Duplicated IP address")
 	}
 
-	return s.repository.Insert(host)
+	return s.repository.Insert(*host)
 }
 
-func (s *hostService) ForceAddStaticHost(host staticDhcpHost) error {
+func (s *hostService) ForceAddStaticHost(host *staticDhcpHost) error {
 	_, err := s.repository.RemoveByMac(host.MacAddress)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func (s *hostService) ForceAddStaticHost(host staticDhcpHost) error {
 		return err
 	}
 
-	return s.repository.Insert(host)
+	return s.repository.Insert(*host)
 }
 
 func (s *hostService) GetStaticHosts() ([]staticDhcpHost, error) {

@@ -18,9 +18,9 @@ functionality of the pi-hole or the FTL.
 
 - [ ] Add authentication / authorization control over the routes
 - [ ] Improve logging with severity classified messages
-- [ ] Move routes to a /api/v1 prefix
+- [x] Move routes to a /api/v1 prefix
 - [ ] Make the system configurable (maybe use Viper?)
-- [ ] Make the code release-ready (set gin properly and remove pretty JSON methods)
+- [x] Make the code release-ready (~~set gin properly~~ and remove pretty JSON methods)
 - [ ] Create the systemd service files
 - [ ] Setup a CI pipeline
 - [ ] Create .deb deployable package (target at least to armv6)

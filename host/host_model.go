@@ -1,4 +1,4 @@
-package hosts
+package host
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 )
 
 type staticDhcpHost struct {
-	MacAddress string `json:"mac_address" binding:"required,mac"`
-	IPAddress  string `json:"ip_address" binding:"required,ipv4"`
-	HostName   string `json:"hostname" binding:"required,hostname"`
+	MacAddress string `json:"mac_address" validate:"required,mac"`
+	IPAddress  string `json:"ip_address" validate:"required,ipv4"`
+	HostName   string `json:"hostname" validate:"required,hostname"`
 }
 
 func (h *staticDhcpHost) FromConfig(config string) error {

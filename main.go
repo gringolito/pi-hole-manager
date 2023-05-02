@@ -1,17 +1,24 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gringolito/pi-hole-manager/hosts"
+	"log"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gringolito/pi-hole-manager/router"
 )
 
 const STATIC_HOSTS_FILE_PATH string = "./04-pihole-static-dhcp.conf"
 
 func main() {
-	router := gin.Default()
+	app := fiber.New(fiber.Config{
+		// Prefork:       true,
+		// StrictRouting:     true,
+		CaseSensitive:     true,
+		EnablePrintRoutes: true,
+		AppName:           "Pi-Hole Manager v0.1.0",
+	})
 
-	h := hosts.NewController(STATIC_HOSTS_FILE_PATH)
-	h.SetupRoutes(router)
+	router.SetupRoutes(app, STATIC_HOSTS_FILE_PATH)
 
-	router.Run("localhost:8080")
+	log.Fatal(app.Listen(":8080"))
 }
