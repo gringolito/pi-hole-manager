@@ -10,14 +10,31 @@ GET http://localhost:8080/api/v1/static/host?ip=192.168.11.199
 ### Get Static Host Invalid
 GET http://localhost:8080/api/v1/static/host
 
+### Add Static Host - Missing fields
+POST http://localhost:8080/api/v1/static/host
+Content-Type: application/json
+
+{
+}
+
+### Add Static Host - Invalid fields
+POST http://localhost:8080/api/v1/static/host
+Content-Type: application/json
+
+{
+    "MacAddress": "00/11/22/33/44/56",
+    "IPAddress": "192:168:11:198",
+    "HostName": "*(&"
+}
+
 ### Add Static Host
 POST http://localhost:8080/api/v1/static/host
 Content-Type: application/json
 
 {
-    "mac_address": "00:11:22:33:44:55",
-    "ip_address": "192.168.11.199",
-    "hostname": "jung"
+    "MacAddress": "00-11-22-33-44-56",
+    "IPAddress": "192.168.11.198",
+    "HostName": "jung2"
 }
 
 ### Update Static Host
@@ -25,16 +42,16 @@ PUT http://localhost:8080/api/v1/static/host
 Content-Type: application/json
 
 {
-    "mac_address": "00:11:22:33:44:55",
-    "ip_address": "192.168.11.199",
-    "hostname": "jung"
+    "MacAddress": "00:11:22:33:44:55",
+    "IPAddress": "192.168.11.199",
+    "HostName": "jung"
 }
 
 ### Delete Static Host By MAC Address
 DELETE http://localhost:8080/api/v1/static/host?mac=00:11:22:33:44:55
 
 ### Delete Static Host By IP Address
-DELETE http://localhost:8080/api/v1/static/host?ip=192.168.11.199
+DELETE http://localhost:8080/api/v1/static/host?ip=192.168.11.198
 
 ### Delete Static Host Invalid
 DELETE http://localhost:8080/api/v1/static/host

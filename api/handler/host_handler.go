@@ -2,16 +2,18 @@ package handler
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gringolito/pi-hole-manager/api/dto"
+	"github.com/gringolito/pi-hole-manager/api/validation"
 	"github.com/gringolito/pi-hole-manager/pkg/host"
 	"github.com/gringolito/pi-hole-manager/pkg/model"
-	"github.com/gringolito/pi-hole-manager/pkg/validation"
 )
 
 func getHostFromBody(c *fiber.Ctx) *model.StaticDhcpHost {
-	host := new(model.StaticDhcpHost)
+	host := new(dto.StaticDhcpHost)
 	if err := c.BodyParser(host); err != nil {
 		c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 		return nil
@@ -22,7 +24,16 @@ func getHostFromBody(c *fiber.Ctx) *model.StaticDhcpHost {
 		return nil
 	}
 
-	return host
+	return host.ToModel()
+}
+
+func toStaticDhcpHostsDto(hosts *[]model.StaticDhcpHost) *[]dto.StaticDhcpHost {
+	response := make([]dto.StaticDhcpHost, 0, len(*hosts))
+	for _, h := range *hosts {
+		response = append(response, *dto.NewStaticDhcpHost(&h))
+	}
+
+	return &response
 }
 
 func GetAllStaticHosts(service host.Service) fiber.Handler {
@@ -32,7 +43,7 @@ func GetAllStaticHosts(service host.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.Status(http.StatusOK).JSON(hosts)
+		return c.Status(http.StatusOK).JSON(toStaticDhcpHostsDto(hosts))
 	}
 }
 
@@ -53,7 +64,12 @@ func GetStaticHost(service host.Service) fiber.Handler {
 }
 
 func getStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string) error {
-	host, err := service.FetchByMac(macAddress)
+	mac, err := net.ParseMAC(macAddress)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	host, err := service.FetchByMac(mac)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -61,11 +77,11 @@ func getStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string) e
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"message": fmt.Sprintf("MAC address '%s' not found", macAddress)})
 	}
 
-	return c.Status(http.StatusOK).JSON(host)
+	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
 }
 
 func getStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) error {
-	host, err := service.FetchByIP(ipAddress)
+	host, err := service.FetchByIP(net.ParseIP(ipAddress))
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -73,7 +89,7 @@ func getStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) err
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"message": fmt.Sprintf("IP address '%s' not found", ipAddress)})
 	}
 
-	return c.Status(http.StatusOK).JSON(host)
+	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
 }
 
 func AddStaticHost(service host.Service) fiber.Handler {
@@ -87,7 +103,7 @@ func AddStaticHost(service host.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.Status(http.StatusCreated).JSON(host)
+		return c.Status(http.StatusCreated).JSON(dto.NewStaticDhcpHost(host))
 	}
 }
 
@@ -102,7 +118,7 @@ func UpdateStaticHost(service host.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.Status(http.StatusCreated).JSON(host)
+		return c.Status(http.StatusCreated).JSON(dto.NewStaticDhcpHost(host))
 	}
 }
 
@@ -123,19 +139,30 @@ func RemoveStaticHost(service host.Service) fiber.Handler {
 }
 
 func removeStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string) error {
-	host, err := service.RemoveByMac(macAddress)
+	mac, err := net.ParseMAC(macAddress)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	host, err := service.RemoveByMac(mac)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
+	if host == nil {
+		return c.SendStatus(http.StatusNoContent)
+	}
 
-	return c.Status(http.StatusOK).JSON(host)
+	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
 }
 
 func removeStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) error {
-	host, err := service.RemoveByIP(ipAddress)
+	host, err := service.RemoveByIP(net.ParseIP(ipAddress))
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
+	if host == nil {
+		return c.SendStatus(http.StatusNoContent)
+	}
 
-	return c.Status(http.StatusOK).JSON(host)
+	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
 }

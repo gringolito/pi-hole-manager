@@ -2,7 +2,9 @@ package host
 
 import (
 	"bufio"
+	"bytes"
 	"log"
+	"net"
 	"os"
 	"strings"
 
@@ -11,12 +13,12 @@ import (
 
 type Repository interface {
 	Delete(host *model.StaticDhcpHost) (*model.StaticDhcpHost, error)
-	DeleteByMac(macAddress string) (*model.StaticDhcpHost, error)
-	DeleteByIP(ipAddress string) (*model.StaticDhcpHost, error)
+	DeleteByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error)
+	DeleteByIP(ipAddress net.IP) (*model.StaticDhcpHost, error)
 	Find(host *model.StaticDhcpHost) (*model.StaticDhcpHost, error)
 	FindAll() (*[]model.StaticDhcpHost, error)
-	FindByMac(macAddress string) (*model.StaticDhcpHost, error)
-	FindByIP(ipAddress string) (*model.StaticDhcpHost, error)
+	FindByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error)
+	FindByIP(ipAddress net.IP) (*model.StaticDhcpHost, error)
 	Save(host *model.StaticDhcpHost) error
 }
 
@@ -35,21 +37,15 @@ func (r *repository) FindAll() (*[]model.StaticDhcpHost, error) {
 }
 
 func (r *repository) Find(host *model.StaticDhcpHost) (*model.StaticDhcpHost, error) {
-	return r.find(func(other model.StaticDhcpHost) bool {
-		return *host == other
-	})
+	return r.find(sameHost(host))
 }
 
-func (r *repository) FindByMac(macAddress string) (*model.StaticDhcpHost, error) {
-	return r.find(func(other model.StaticDhcpHost) bool {
-		return macAddress == other.MacAddress
-	})
+func (r *repository) FindByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error) {
+	return r.find(sameMacAddress(macAddress))
 }
 
-func (r *repository) FindByIP(ipAddress string) (*model.StaticDhcpHost, error) {
-	return r.find(func(other model.StaticDhcpHost) bool {
-		return ipAddress == other.IPAddress
-	})
+func (r *repository) FindByIP(ipAddress net.IP) (*model.StaticDhcpHost, error) {
+	return r.find(sameIPAddress(ipAddress))
 }
 
 func (r *repository) Save(host *model.StaticDhcpHost) error {
@@ -63,21 +59,15 @@ func (r *repository) Save(host *model.StaticDhcpHost) error {
 }
 
 func (r *repository) Delete(host *model.StaticDhcpHost) (*model.StaticDhcpHost, error) {
-	return r.delete(func(other model.StaticDhcpHost) bool {
-		return *host == other
-	})
+	return r.delete(sameHost(host))
 }
 
-func (r *repository) DeleteByMac(macAddress string) (*model.StaticDhcpHost, error) {
-	return r.delete(func(other model.StaticDhcpHost) bool {
-		return macAddress == other.MacAddress
-	})
+func (r *repository) DeleteByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error) {
+	return r.delete(sameMacAddress(macAddress))
 }
 
-func (r *repository) DeleteByIP(ipAddress string) (*model.StaticDhcpHost, error) {
-	return r.delete(func(other model.StaticDhcpHost) bool {
-		return ipAddress == other.IPAddress
-	})
+func (r *repository) DeleteByIP(ipAddress net.IP) (*model.StaticDhcpHost, error) {
+	return r.delete(sameIPAddress(ipAddress))
 }
 
 func (r *repository) load() (*[]model.StaticDhcpHost, error) {
@@ -125,7 +115,7 @@ func (r *repository) save(hosts *[]model.StaticDhcpHost) error {
 	return os.WriteFile(r.staticHostsFilePath, []byte(strings.Join(config, "\n")), os.FileMode(0644))
 }
 
-func (r *repository) delete(filter func(host model.StaticDhcpHost) bool) (*model.StaticDhcpHost, error) {
+func (r *repository) delete(filter Filter) (*model.StaticDhcpHost, error) {
 	hosts, err := r.load()
 	if err != nil {
 		return nil, err
@@ -145,7 +135,7 @@ func (r *repository) delete(filter func(host model.StaticDhcpHost) bool) (*model
 	return nil, nil
 }
 
-func (r *repository) find(filter func(host model.StaticDhcpHost) bool) (*model.StaticDhcpHost, error) {
+func (r *repository) find(filter Filter) (*model.StaticDhcpHost, error) {
 	hosts, err := r.load()
 	if err != nil {
 		return nil, err
@@ -158,4 +148,23 @@ func (r *repository) find(filter func(host model.StaticDhcpHost) bool) (*model.S
 	}
 
 	return nil, nil
+}
+
+type Filter func(model.StaticDhcpHost) bool
+
+func sameHost(host *model.StaticDhcpHost) Filter {
+	return func(other model.StaticDhcpHost) bool {
+		return host.Equal(other)
+	}
+}
+func sameMacAddress(macAddress net.HardwareAddr) Filter {
+	return func(other model.StaticDhcpHost) bool {
+		return bytes.Equal(macAddress, other.MacAddress)
+	}
+}
+
+func sameIPAddress(ipAddress net.IP) Filter {
+	return func(other model.StaticDhcpHost) bool {
+		return bytes.Equal(ipAddress, other.IPAddress)
+	}
 }

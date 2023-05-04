@@ -1,14 +1,16 @@
 package model
 
 import (
+	"bytes"
 	"fmt"
+	"net"
 	"strings"
 )
 
 type StaticDhcpHost struct {
-	MacAddress string `json:"mac_address" validate:"required,mac"`
-	IPAddress  string `json:"ip_address" validate:"required,ipv4"`
-	HostName   string `json:"hostname" validate:"required,hostname"`
+	MacAddress net.HardwareAddr
+	IPAddress  net.IP
+	HostName   string
 }
 
 func (h *StaticDhcpHost) FromConfig(config string) error {
@@ -17,16 +19,23 @@ func (h *StaticDhcpHost) FromConfig(config string) error {
 		return fmt.Errorf("Invalid DHCP host entry")
 	}
 
-	_, err := fmt.Sscanf(tokens[0], "dhcp-host=%s", &h.MacAddress)
+	var mac string
+	_, err := fmt.Sscanf(tokens[0], "dhcp-host=%s", &mac)
 	if err != nil {
 		return err
 	}
-	h.IPAddress = tokens[1]
+
+	h.MacAddress, err = net.ParseMAC(mac)
+	h.IPAddress = net.ParseIP(tokens[1])
 	h.HostName = tokens[2]
 
-	return nil
+	return err
 }
 
 func (h *StaticDhcpHost) ToConfig() string {
-	return fmt.Sprintf("dhcp-host=%s,%s,%s", h.MacAddress, h.IPAddress, h.HostName)
+	return fmt.Sprintf("dhcp-host=%s,%s,%s", h.MacAddress.String(), h.IPAddress.String(), h.HostName)
+}
+
+func (h *StaticDhcpHost) Equal(other StaticDhcpHost) bool {
+	return bytes.Equal(h.MacAddress, other.MacAddress) && bytes.Equal(h.IPAddress, other.IPAddress) && h.HostName == other.HostName
 }

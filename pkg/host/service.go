@@ -2,6 +2,7 @@ package host
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/gringolito/pi-hole-manager/pkg/model"
 )
@@ -10,10 +11,10 @@ type Service interface {
 	Insert(host *model.StaticDhcpHost) error
 	Update(host *model.StaticDhcpHost) error
 	FetchAll() (*[]model.StaticDhcpHost, error)
-	FetchByIP(ipAddress string) (*model.StaticDhcpHost, error)
-	FetchByMac(macAddress string) (*model.StaticDhcpHost, error)
-	RemoveByIP(ipAddress string) (*model.StaticDhcpHost, error)
-	RemoveByMac(macAddress string) (*model.StaticDhcpHost, error)
+	FetchByIP(ipAddress net.IP) (*model.StaticDhcpHost, error)
+	FetchByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error)
+	RemoveByIP(ipAddress net.IP) (*model.StaticDhcpHost, error)
+	RemoveByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error)
 }
 
 type service struct {
@@ -64,18 +65,18 @@ func (s *service) FetchAll() (*[]model.StaticDhcpHost, error) {
 	return s.repository.FindAll()
 }
 
-func (s *service) FetchByMac(macAddress string) (*model.StaticDhcpHost, error) {
+func (s *service) FetchByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error) {
 	return s.repository.FindByMac(macAddress)
 }
 
-func (s *service) FetchByIP(ipAddress string) (*model.StaticDhcpHost, error) {
+func (s *service) FetchByIP(ipAddress net.IP) (*model.StaticDhcpHost, error) {
 	return s.repository.FindByIP(ipAddress)
 }
 
-func (s *service) RemoveByMac(macAddress string) (*model.StaticDhcpHost, error) {
+func (s *service) RemoveByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error) {
 	return s.repository.DeleteByMac(macAddress)
 }
 
-func (s *service) RemoveByIP(ipAddress string) (*model.StaticDhcpHost, error) {
+func (s *service) RemoveByIP(ipAddress net.IP) (*model.StaticDhcpHost, error) {
 	return s.repository.DeleteByIP(ipAddress)
 }
