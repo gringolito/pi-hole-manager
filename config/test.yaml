@@ -1,0 +1,13 @@
+host:
+  static:
+    file: ./04-pihole-static-dhcp.conf
+
+auth:
+  username: foo
+  password: bar
+
+server:
+  port: 8080
+
+log:
+  level: debug

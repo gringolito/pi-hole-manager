@@ -17,6 +17,6 @@ func HostRouter(api fiber.Router, service host.Service) {
 	}, "static.hosts.")
 }
 
-func MetricsRouter(router fiber.Router) {
-	router.Get("/metrics", monitor.New(monitor.Config{Title: "Pi-Hole Manager Monitor"}))
+func MetricsRouter(router fiber.Router, cfg monitor.Config) {
+	router.Get("/metrics", monitor.New(cfg))
 }
