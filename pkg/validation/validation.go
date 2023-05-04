@@ -6,12 +6,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type ValidationError struct {
+type Error struct {
 	Field   string `json:"field"`
 	Message string `json:"message"`
 }
 
-func (v *ValidationError) FromError(err validator.FieldError) {
+func (v Error) FromError(err validator.FieldError) Error {
 	v.Field = err.Field()
 
 	if err.Tag() == "required" {
@@ -19,18 +19,18 @@ func (v *ValidationError) FromError(err validator.FieldError) {
 	} else {
 		v.Message = fmt.Sprintf("Invalid value '%s' for type '%s'", err.Value(), err.Tag())
 	}
+
+	return v
 }
 
 var validate = validator.New()
 
-func Validate(obj interface{}) []ValidationError {
+func Validate(obj interface{}) []Error {
 	err := validate.Struct(obj)
 	if err != nil {
-		errors := []ValidationError{}
+		errors := []Error{}
 		for _, err := range err.(validator.ValidationErrors) {
-			validationError := ValidationError{}
-			validationError.FromError(err)
-			errors = append(errors, validationError)
+			errors = append(errors, Error{}.FromError(err))
 		}
 		return errors
 	}

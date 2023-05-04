@@ -1,0 +1,40 @@
+### Get All Static Hosts
+GET http://localhost:8080/api/v1/static/hosts
+
+### Get Static Host By MAC Address
+GET http://localhost:8080/api/v1/static/host?mac=00:11:22:33:44:55
+
+### Get Static Host By IP Address
+GET http://localhost:8080/api/v1/static/host?ip=192.168.11.199
+
+### Get Static Host Invalid
+GET http://localhost:8080/api/v1/static/host
+
+### Add Static Host
+POST http://localhost:8080/api/v1/static/host
+Content-Type: application/json
+
+{
+    "mac_address": "00:11:22:33:44:55",
+    "ip_address": "192.168.11.199",
+    "hostname": "jung"
+}
+
+### Update Static Host
+PUT http://localhost:8080/api/v1/static/host
+Content-Type: application/json
+
+{
+    "mac_address": "00:11:22:33:44:55",
+    "ip_address": "192.168.11.199",
+    "hostname": "jung"
+}
+
+### Delete Static Host By MAC Address
+DELETE http://localhost:8080/api/v1/static/host?mac=00:11:22:33:44:55
+
+### Delete Static Host By IP Address
+DELETE http://localhost:8080/api/v1/static/host?ip=192.168.11.199
+
+### Delete Static Host Invalid
+DELETE http://localhost:8080/api/v1/static/host

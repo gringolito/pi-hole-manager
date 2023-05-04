@@ -25,6 +25,7 @@ functionality of the pi-hole or the FTL.
 - [ ] Setup a CI pipeline
 - [ ] Create .deb deployable package (target at least to armv6)
 - [ ] Create a OpenAI/Swagger documentation
+- [ ] Add unit tests
 
 ### Phase-2
 

@@ -1,17 +1,17 @@
-package host
+package model
 
 import (
 	"fmt"
 	"strings"
 )
 
-type staticDhcpHost struct {
+type StaticDhcpHost struct {
 	MacAddress string `json:"mac_address" validate:"required,mac"`
 	IPAddress  string `json:"ip_address" validate:"required,ipv4"`
 	HostName   string `json:"hostname" validate:"required,hostname"`
 }
 
-func (h *staticDhcpHost) FromConfig(config string) error {
+func (h *StaticDhcpHost) FromConfig(config string) error {
 	tokens := strings.Split(config, ",")
 	if len(tokens) != 3 {
 		return fmt.Errorf("Invalid DHCP host entry")
@@ -27,6 +27,6 @@ func (h *staticDhcpHost) FromConfig(config string) error {
 	return nil
 }
 
-func (h *staticDhcpHost) ToConfig() string {
+func (h *StaticDhcpHost) ToConfig() string {
 	return fmt.Sprintf("dhcp-host=%s,%s,%s", h.MacAddress, h.IPAddress, h.HostName)
 }
