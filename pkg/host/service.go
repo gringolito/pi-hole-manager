@@ -16,7 +16,6 @@ type Service interface {
 	RemoveByIP(ipAddress net.IP) (*model.StaticDhcpHost, error)
 	RemoveByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHost, error)
 }
-
 type service struct {
 	repository Repository
 }
@@ -33,7 +32,7 @@ func (s *service) Insert(host *model.StaticDhcpHost) error {
 		return err
 	}
 	if sameMacHost != nil {
-		return fmt.Errorf("Duplicated MAC address")
+		return &DuplicatedEntryError{Field: "MAC", Value: host.MacAddress.String()}
 	}
 
 	sameIPHost, err := s.repository.FindByIP(host.IPAddress)
@@ -41,7 +40,7 @@ func (s *service) Insert(host *model.StaticDhcpHost) error {
 		return err
 	}
 	if sameIPHost != nil {
-		return fmt.Errorf("Duplicated IP address")
+		return &DuplicatedEntryError{Field: "IP", Value: host.IPAddress.String()}
 	}
 
 	return s.repository.Save(host)
@@ -79,4 +78,13 @@ func (s *service) RemoveByMac(macAddress net.HardwareAddr) (*model.StaticDhcpHos
 
 func (s *service) RemoveByIP(ipAddress net.IP) (*model.StaticDhcpHost, error) {
 	return s.repository.DeleteByIP(ipAddress)
+}
+
+type DuplicatedEntryError struct {
+	Field string
+	Value string
+}
+
+func (e DuplicatedEntryError) Error() string {
+	return fmt.Sprintf("Duplicated %s address: %s", e.Field, e.Value)
 }
