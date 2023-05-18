@@ -1,9 +1,0 @@
-host:
-  static:
-    file: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
-
-server:
-  port: 6904
-
-log:
-  level: info

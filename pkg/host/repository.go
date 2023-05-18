@@ -3,12 +3,12 @@ package host
 import (
 	"bufio"
 	"bytes"
-	"log"
 	"net"
 	"os"
 	"strings"
 
 	"github.com/gringolito/pi-hole-manager/pkg/model"
+	"golang.org/x/exp/slog"
 )
 
 type Repository interface {
@@ -73,7 +73,10 @@ func (r *repository) DeleteByIP(ipAddress net.IP) (*model.StaticDhcpHost, error)
 func (r *repository) load() (*[]model.StaticDhcpHost, error) {
 	file, err := os.Open(r.staticHostsFilePath)
 	if err != nil {
-		log.Printf("Error reading static hosts file (%s): %s", r.staticHostsFilePath, err.Error())
+		slog.Error("Error reading static hosts file",
+			slog.String("file", r.staticHostsFilePath),
+			slog.String("error", err.Error()),
+		)
 		return nil, err
 	}
 	defer file.Close()
@@ -88,15 +91,18 @@ func (r *repository) parse(file *os.File) (*[]model.StaticDhcpHost, error) {
 	hosts := []model.StaticDhcpHost{}
 	for scanner.Scan() {
 		if !strings.HasPrefix(scanner.Text(), "dhcp-host=") {
-			log.Println("Skipping line:", scanner.Text())
+			slog.Debug("Skipping line", slog.String("line", scanner.Text()))
 			continue
 		}
-		log.Println("Parsing line:", scanner.Text())
+		slog.Debug("Parsing line", slog.String("line", scanner.Text()))
 
 		host := model.StaticDhcpHost{}
 		err := host.FromConfig(scanner.Text())
 		if err != nil {
-			log.Printf("Failed to parse static DHCP host entry (%s): %s", scanner.Text(), err.Error())
+			slog.Error("Failed to parse static DHCP host entry",
+				slog.String("entry", scanner.Text()),
+				slog.String("error", err.Error()),
+			)
 			return nil, err
 		}
 

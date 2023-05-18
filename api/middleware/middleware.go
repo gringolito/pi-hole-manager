@@ -2,18 +2,21 @@ package middleware
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/gringolito/pi-hole-manager/api/middleware/fiberslog"
+	"golang.org/x/exp/slog"
 )
 
-func Setup(router fiber.Router) {
+func Setup(router fiber.Router, logger *slog.Logger) {
 	router.Use(recover.New(recover.Config{
 		EnableStackTrace: true,
 	}))
 	router.Use(requestid.New())
-	router.Use(logger.New(logger.Config{
-		Format:     "[${time}] ${pid} [${ip}]:${port} ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
-		TimeFormat: "2006-01-02T15:04:05 MST",
+
+	router.Use(fiberslog.New(fiberslog.Config{
+		Logger: logger,
+		Fields: []string{"latency", "status", "method", "path", "requestId", "ip", "port", "pid"},
 	}))
+
 }
