@@ -2,9 +2,9 @@ openapi: 3.0.1
 info:
   title: Pi-Hole Manager
   description: |-
-    Pi-Hole Local DNS / DHCP management external API
+    Pi-Hole Local DNS / DHCP management API
 
-    This project provides an API to manage some of the DHCP/DNS resources on a pi-hole server:
+    This API provides methods to manage some of the DHCP/DNS resources on a pi-hole server:
 
       - Static DHCP entries
       - Local DNS entries
@@ -21,7 +21,10 @@ info:
   version: 0.1.0
 
 servers:
-- url: http://localhost/api/v1
+- url: http://{server}/api/v1
+  variables:
+    server:
+      default: "localhost:6904"
 
 tags:
 - name: Static hosts

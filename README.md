@@ -1,6 +1,6 @@
 # pi-hole-manager
 
-Pi-Hole Local DNS / DHCP management external API
+Pi-Hole Local DNS / DHCP management API
 
 This project provides a RESTful API to manage some of the DHCP/DNS resources on a pi-hole
 installation, like:
@@ -24,7 +24,7 @@ functionality of the pi-hole or the FTL.
 - [ ] Create the systemd service files
 - [ ] Setup a CI pipeline
 - [ ] Create .deb deployable package (target at least to armv6)
-- [ ] Create a OpenAI/Swagger documentation
+- [x] Create a OpenAI/Swagger documentation
 - [ ] Add unit tests
 
 ### Phase-2
