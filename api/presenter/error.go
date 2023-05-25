@@ -17,3 +17,7 @@ func InternalServerErrorResponse(c *fiber.Ctx, err error) error {
 func BadRequestResponse(c *fiber.Ctx, err error) error {
 	return ErrorResponse(c, http.StatusBadRequest, err)
 }
+
+func NotFoundResponse(c *fiber.Ctx, err error) error {
+	return ErrorResponse(c, http.StatusNotFound, err)
+}

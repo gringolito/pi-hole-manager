@@ -1,0 +1,260 @@
+openapi: 3.0.1
+info:
+  title: Pi-Hole Manager
+  description: |-
+    Pi-Hole Local DNS / DHCP management API
+
+    This API provides methods to manage some of the DHCP/DNS resources on a pi-hole server:
+
+      - Static DHCP entries
+      - Local DNS entries
+      - CNAME aliases
+
+
+        Some useful links:
+    - [Pi-Hole Manager repository](https://github.com/gringolito/pi-hole-manager)
+  contact:
+    email: filipeutzig@gmail.com
+  license:
+    name: Beerware
+    url: https://raw.githubusercontent.com/gringolito/pi-hole-manager/master/LICENSE
+  version: 0.1.0
+
+servers:
+- url: http://{server}/api/v1
+  variables:
+    server:
+      default: "localhost:6904"
+
+tags:
+- name: Static hosts
+  description: Manage static DHCP entries
+
+paths:
+  /static/hosts:
+    get:
+      tags:
+      - Static hosts
+      summary: Get all the static DHCP hosts
+      description: Return the list of all static DHCP entries on the pi-hole server
+      operationId: GetAllStaticHosts
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DHCPHost'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_key: []
+
+  /static/host:
+    get:
+      tags:
+      - Static hosts
+      summary: Get a static DHCP host by MAC/IP address
+      description: Returns a DHCP host entry
+      operationId: GetStaticHost
+      parameters:
+      - name: mac
+        in: query
+        description: MAC address of the host
+        schema:
+          type: string
+          format: mac
+      - name: ip
+        in: query
+        description: IP address of the host
+        schema:
+          type: string
+          format: ipv4
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DHCPHost'
+        400:
+          description: Invalid query supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Host not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_key: []
+
+    put:
+      tags:
+      - Static hosts
+      summary: Add or update a static DHCP host
+      description: Add or update a static DHCP host entry
+      operationId: UpdateStaticHost
+      requestBody:
+        description: DHCP host object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DHCPHost'
+        required: true
+      responses:
+        201:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DHCPHost'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_key: []
+
+    post:
+      tags:
+      - Static hosts
+      summary: Add a new static DHCP host
+      description: Create a new static DHCP host entry if the host doesn't exists
+      operationId: AddStaticHost
+      requestBody:
+        description: DHCP host object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DHCPHost'
+        required: true
+      responses:
+        201:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DHCPHost'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_key: []
+
+    delete:
+      tags:
+      - Static hosts
+      summary: Delete a static DHCP host by MAC/IP address
+      description: Remove a DHCP host entry
+      operationId: RemoveStaticHost
+      parameters:
+      - name: mac
+        in: query
+        description: MAC address of the host
+        schema:
+          type: string
+          format: mac
+      - name: ip
+        in: query
+        description: IP address of the host
+        schema:
+          type: string
+          format: ipv4
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DHCPHost'
+        204:
+          description: Nothing to be done
+          content: {}
+        400:
+          description: Invalid query supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Host not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_key: []
+
+components:
+  schemas:
+    DHCPHost:
+      required:
+      - HostName
+      - IPAddress
+      - MacAddress
+      type: object
+      properties:
+        MacAddress:
+          type: string
+          format: mac
+          example: 00:11:22:33:44:55
+        IPAddress:
+          type: string
+          format: ipv4
+          example: 10.0.0.1
+        HostName:
+          type: string
+          format: hostname
+          example: foo.bar
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: something went wrong
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

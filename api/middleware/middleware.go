@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gringolito/pi-hole-manager/api/middleware/fiberslog"
+	"github.com/gringolito/pi-hole-manager/api/middleware/fiberswagger"
 	"golang.org/x/exp/slog"
 )
 
@@ -19,4 +20,7 @@ func Setup(router fiber.Router, logger *slog.Logger) {
 		Fields: []string{"latency", "status", "method", "path", "requestId", "ip", "port", "pid"},
 	}))
 
+	router.Use(fiberswagger.New(fiberswagger.Config{
+		FilePath: "api/spec/openapi.yaml",
+	}))
 }

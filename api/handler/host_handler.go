@@ -60,7 +60,9 @@ func GetStaticHost(service host.Service) fiber.Handler {
 			return getStaticHostByIP(service, c, ipAddress)
 		}
 
-		return presenter.BadRequestResponse(c, fmt.Errorf("No query parameter specified"))
+		return presenter.BadRequestResponse(c,
+			fmt.Errorf("invalid query parameter specified, requires one of: [mac, ip]"),
+		)
 	}
 }
 
@@ -75,7 +77,7 @@ func getStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string) e
 		return presenter.InternalServerErrorResponse(c, err)
 	}
 	if host == nil {
-		return c.Status(http.StatusNotFound).JSON(fiber.Map{"message": fmt.Sprintf("MAC address '%s' not found", macAddress)})
+		return presenter.NotFoundResponse(c, fmt.Errorf("MAC address '%s' not found", macAddress))
 	}
 
 	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
@@ -87,7 +89,7 @@ func getStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) err
 		return presenter.InternalServerErrorResponse(c, err)
 	}
 	if host == nil {
-		return c.Status(http.StatusNotFound).JSON(fiber.Map{"message": fmt.Sprintf("IP address '%s' not found", ipAddress)})
+		return presenter.NotFoundResponse(c, fmt.Errorf("IP address '%s' not found", ipAddress))
 	}
 
 	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
@@ -97,6 +99,7 @@ func AddStaticHost(service host.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		h := getHostFromBody(c)
 		if h == nil {
+			// The errors was already handled by the getHostFromBody()
 			return nil
 		}
 
@@ -116,6 +119,7 @@ func UpdateStaticHost(service host.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		host := getHostFromBody(c)
 		if host == nil {
+			// The errors was already handled by the getHostFromBody()
 			return nil
 		}
 
@@ -139,7 +143,9 @@ func RemoveStaticHost(service host.Service) fiber.Handler {
 			return removeStaticHostByIP(service, c, ipAddress)
 		}
 
-		return presenter.BadRequestResponse(c, fmt.Errorf("No query parameter specified"))
+		return presenter.BadRequestResponse(c,
+			fmt.Errorf("invalid query parameter specified, requires one of: [mac, ip]"),
+		)
 	}
 }
 
