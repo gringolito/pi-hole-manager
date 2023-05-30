@@ -1,0 +1,30 @@
+# Uncomment this config block to set the Pi-Hole static DHCP hosts file.
+# Defaults to: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
+#
+# host:
+#   static:
+#     file: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
+
+# Uncomment this config block to enable authentication on the API endpoints and set the
+# username and password.
+# Defaults to: No authentication
+#
+# auth:
+#   username: user
+#   password: pass
+
+# Uncomment this config block to change the server HTTP listening port.
+# Defaults to: 6904
+#
+# server:
+#   port: 6904
+
+# Uncomment this config block to change the logging settings for the service.
+# Available levels: debug, info, warning, error.
+# Available formats: text, json.
+# Defaults to: info / json / stdout
+#
+# log:
+#   level: info
+#   format: json
+#   file: /var/log/pi-hole-manager.log
