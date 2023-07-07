@@ -25,3 +25,9 @@
 go.work
 
 # End of https://www.toptal.com/developers/gitignore/api/go
+
+# Debian packaging build artifacts
+debian/build/
+
+# Makefile targets
+.phm-debuilder

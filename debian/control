@@ -1,0 +1,29 @@
+Source: pi-hole-manager
+Maintainer: Filipe Utzig <filipe@gringolito.com>
+Section: golang
+Testsuite: autopkgtest-pkg-go
+Priority: optional
+Build-Depends: debhelper-compat (= 13),
+               dh-golang
+Standards-Version: 4.6.0
+Vcs-Browser: https://github.com/gringolito/pi-hole-manager
+Vcs-Git: https://github.com/gringolito/pi-hole-manager.git
+Homepage: https://github.com/gringolito/pi-hole-manager
+Rules-Requires-Root: no
+XS-Go-Import-Path: github.com/gringolito/pi-hole-manager
+
+Package: pi-hole-manager
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends}
+Built-Using: ${misc:Built-Using}
+Description: Pi-Hole Local DNS / DHCP management external API (program)
+ This project provides a RESTful API to manage some of the DHCP/DNS
+ resources on a pi-hole installation, like:
+ .
+  * Manage static DHCP entries
+  * Manage local DNS entries
+  * Manage CNAME aliases
+ .
+ We are not interested on managing the Adlists, Whitelists, Query logs or
+ any other primary functionality of the pi-hole or the FTL.

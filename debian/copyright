@@ -1,0 +1,16 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: pi-hole-manager
+Upstream-Contact: Filipe Utzig <filipe@gringolito.com>
+Source: https://github.com/gringolito/pi-hole-manager
+
+Files: *
+Copyright: 2023 Filipe Utzig
+License: Beerware
+
+License: Beerware
+ ----------------------------------------------------------------------------
+ "THE BEER-WARE LICENSE" (Revision 42):
+ <filipe@gringolito.com> wrote this file. As long as you retain this notice
+ you can do whatever you want with this stuff. If we meet some day, and you
+ think this stuff is worth it, you can buy me a beer in return. Filipe Utzig.
+ ----------------------------------------------------------------------------

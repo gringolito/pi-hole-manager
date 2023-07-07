@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+export GOPATH=/go
+export PATH:=/usr/local/go/bin/:$(PATH)
+
+%:
+	go mod vendor -o _build/src
+	dh $@ --builddirectory=_build --buildsystem=golang --with=golang
+
+override_dh_auto_install:
+	dh_auto_install -- --no-source
+
+override_dh_golang:
+# 	dh_golang -O--builddirectory=_build -O--buildsystem=golang
