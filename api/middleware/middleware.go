@@ -9,7 +9,7 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-func Setup(router fiber.Router, logger *slog.Logger) {
+func Setup(router fiber.Router, logger *slog.Logger, openApiFilePath string) {
 	router.Use(recover.New(recover.Config{
 		EnableStackTrace: true,
 	}))
@@ -21,6 +21,6 @@ func Setup(router fiber.Router, logger *slog.Logger) {
 	}))
 
 	router.Use(fiberswagger.New(fiberswagger.Config{
-		FilePath: "api/spec/openapi.yaml",
+		FilePath: openApiFilePath,
 	}))
 }

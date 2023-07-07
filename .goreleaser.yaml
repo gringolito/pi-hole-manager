@@ -1,0 +1,73 @@
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    tags:
+      - release
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+      - 386
+    goarm:
+      - 5
+      - 6
+      - 7
+
+archives:
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of uname.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+checksum:
+  name_template: checksums.txt
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+# Linux packages
+nfpms:
+  - id: default
+    maintainer: Filipe Utzig <filipe@gringolito.com>
+    homepage: https://github.com/gringolito/pi-hole-manager
+    description: Pi-Hole Local DNS / DHCP management external API.
+    license: Beer-ware
+    formats:
+      - deb
+      - rpm
+      - apk
+      - archlinux
+    bindir: /usr/bin
+    contents:
+      - src: ./api/spec/openapi.yaml
+        dst: /usr/share/pi-hole-manager/spec/openapi.yaml
+      # - src: config.yaml.dist
+      #   dst: /etc/pi-hole-manager/config.yaml
+      #   type: config
+      # - src: ./systemd/pi-hole-manager.service
+      #   dst: /etc/systemd/system/pi-hole-manager.service
+      #   type: config
+      # - src: ./systemd/pi-hole-manager
+      #   dst: /etc/default/pi-hole-manager
+      #   type: config
+    deb:
+      lintian_overrides:
+        - statically-linked-binary
+        - changelog-file-missing-in-native-package
+
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
