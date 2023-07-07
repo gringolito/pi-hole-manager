@@ -1,0 +1,110 @@
+[Unit]
+Description=Pi-Hole Manager API
+Documentation=https://github.com/gringolito/pi-hole-manager
+
+# This unit is supposed to indicate when network functionality is available, but it is only
+# very weakly defined what that is supposed to mean, with one exception: at shutdown, a unit
+# that is ordered after network-online.target will be stopped before the network
+Wants=network-online.target
+After=network-online.target
+
+# Limit (re)start loop to 5 within 1 minute
+StartLimitBurst=5
+StartLimitIntervalSec=60s
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/default/pi-hole-manager
+User=root
+Group=root
+ExecStart=/usr/bin/pi-hole-manager $ARGS
+StandardOutput=journal
+Restart=on-failure
+RestartSec=5s
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Use graceful shutdown with a reasonable timeout
+TimeoutStopSec=10s
+
+# Hardening
+
+# Make home directories inaccessible and empty for the process
+ProtectHome=true
+
+# Make the entire file system hierarchy to be mounted read-only, except for:
+# - the API file system subtrees /dev, /proc and /sys
+ProtectSystem=strict
+# - ... and the /etc/dnsmasq.d/
+ReadWritePaths=/etc/dnsmasq.d/
+
+# Only allows access to standard pseudo devices including /dev/null, /dev/zero, /dev/full,
+# /dev/random, and /dev/urandom
+DevicePolicy=closed
+
+# Sets up a new /dev mount for the executed processes and prevent access to physical devices
+PrivateDevices=true
+
+# Sets up a new file system namespace for the executed processes and mounts private /tmp and
+# /var/tmp directories
+PrivateTmp=true
+
+# Hide other users processes
+ProtectProc=invisible
+ProcSubset=pid
+
+# Sets up a new user namespace for the executed processes and configures a minimal user and
+# group mapping, that maps the "root" user and group as well as the unit's own user and
+# group to themselves and everything else to the "nobody" user and group
+PrivateUsers=true
+
+# Disable kernel module loading, changing kernel variables and accessing kernel logs
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectKernelLogs=true
+
+# Disable emulation of different behaviors to support non-Linux-native binaries
+LockPersonality=true
+
+# Make cgroups read-only for the process
+ProtectControlGroups=true
+
+# Only allows creating network sockets
+RestrictAddressFamilies=AF_INET AF_INET6
+
+# Prevent enabling realtime scheduling
+RestrictRealtime=true
+
+# Prevent setting UID/GID bits on files or directories
+RestrictSUIDSGID=true
+
+# Disable changing system host/domainname
+ProtectHostname=true
+
+# Disable changes in the hardware or system clock
+ProtectClock=true
+
+# Retain only the capability to bing network services
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+# Ensures that the service process and all its children can never gain new privileges through execve()
+NoNewPrivileges=true
+
+# Disable access / creating of memory mappings that are writable and executable at the same time
+MemoryDenyWriteExecute=true
+
+# Allow only syscalls in group @system-service the those in groups @privileged and @resources
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+
+# Allow native calls only
+SystemCallArchitectures=native
+
+# Retain only access to the network namespace
+RestrictNamespaces=net
+
+# Create files and directories that are only accessible by user/owner if permission are not
+# explicitly set during creation
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
