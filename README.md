@@ -23,7 +23,8 @@ functionality of the pi-hole or the FTL.
 - [x] Make the code release-ready (~~set gin properly~~ and remove pretty JSON methods)
 - [ ] Create the systemd service files
 - [ ] Setup a CI pipeline
-- [ ] Create .deb deployable package (target at least to armv6)
+- [x] Create .deb deployable package (target at least to armv6)
+    - [x] .rpm, .apk, ArchLinux packages and tarball archives for all the main architectures (BONUS)
 - [x] Create a OpenAI/Swagger documentation
 - [ ] Add unit tests
 

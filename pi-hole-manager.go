@@ -20,6 +20,13 @@ const (
 	AppVersion = "v0.1.0"
 )
 
+// These properties are variables because release builds will change their values
+var (
+	BuildMode = "Development"
+	// This file path will be changed to a proper absolute path on the OS directory tree
+	OpenApiSpecFile = "api/spec/openapi.yaml"
+)
+
 func setupLogger(cfg *config.Config) *slog.Logger {
 	// Defaults to false
 	addSource := map[string]bool{
@@ -84,15 +91,15 @@ func main() {
 	}
 
 	logger := setupLogger(cfg)
-	logger.Info("Starting app", slog.String("mode", cfg.Environment))
+	logger.Info("Starting app", slog.String("environment", cfg.Environment))
 
 	app := fiber.New(fiber.Config{
 		CaseSensitive:     true,
 		EnablePrintRoutes: true,
-		AppName:           fmt.Sprintf("%s %s", AppName, AppVersion),
+		AppName:           fmt.Sprintf("%s %s (%s build)", AppName, AppVersion, BuildMode),
 	})
 
-	middleware.Setup(app, logger)
+	middleware.Setup(app, logger, OpenApiSpecFile)
 
 	routes.MetricsRouter(app, monitor.Config{
 		Title: fmt.Sprintf("%s Monitor", AppName),
