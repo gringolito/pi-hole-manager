@@ -3,7 +3,7 @@ package fiberswagger
 type Config struct {
 	// Base path for the SwaggerUI.
 	//
-	// Optional. Default: "/docs/"
+	// Optional. Default: "/docs"
 	BasePath string
 
 	// OpenAPI specification file path to be rendered.
@@ -14,7 +14,7 @@ type Config struct {
 
 // ConfigDefault is the default config
 var ConfigDefault = Config{
-	BasePath: "/",
+	BasePath: "/docs",
 	FilePath: "./openapi.yaml",
 }
 

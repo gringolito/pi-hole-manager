@@ -3,7 +3,9 @@ package fiberswagger
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
+	"path"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
@@ -31,9 +33,12 @@ func New(config ...Config) fiber.Handler {
 		panic(err)
 	}
 
-	swaggerUiHandler := middleware.SwaggerUI(middleware.SwaggerUIOpts{BasePath: cfg.BasePath}, nil)
-	specFileHandler := middleware.Spec(cfg.BasePath, spec, swaggerUiHandler)
+	return adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
+		swaggerUiHandler := middleware.SwaggerUI(middleware.SwaggerUIOpts{
+			Path:    cfg.BasePath,
+			SpecURL: path.Join(cfg.BasePath, "swagger.json"),
+		}, next)
 
-	// Return new handler
-	return adaptor.HTTPHandler(specFileHandler)
+		return middleware.Spec(cfg.BasePath, spec, swaggerUiHandler)
+	})
 }
