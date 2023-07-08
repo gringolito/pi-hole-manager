@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gringolito/pi-hole-manager/api/middleware"
+	"github.com/gringolito/pi-hole-manager/api/middleware/fiberswagger"
 	"github.com/gringolito/pi-hole-manager/api/routes"
 	"github.com/gringolito/pi-hole-manager/config"
 	"github.com/gringolito/pi-hole-manager/pkg/host"
@@ -99,7 +100,11 @@ func main() {
 		AppName:           fmt.Sprintf("%s %s (%s build)", AppName, AppVersion, BuildMode),
 	})
 
-	middleware.Setup(app, logger, OpenApiSpecFile)
+	middleware.Setup(app, logger)
+
+	routes.OpenApiRouter(app, fiberswagger.Config{
+		FilePath: OpenApiSpecFile,
+	})
 
 	routes.MetricsRouter(app, monitor.Config{
 		Title: fmt.Sprintf("%s Monitor", AppName),
