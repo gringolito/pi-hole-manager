@@ -13,22 +13,28 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 )
 
-// New returns a fiber.Handler (middleware) that renders OpenAPI specification using SwaggerUI.
-// New creates a new middleware handler
-func New(config ...Config) fiber.Handler {
-	// Set default config
-	cfg := configDefault(config...)
-
+func loadSpec(cfg Config) *loads.Document {
 	if _, err := os.Stat(cfg.FilePath); os.IsNotExist(err) {
 		panic(fmt.Errorf("%s file is not exist", cfg.FilePath))
 	}
 
-	specDoc, err := loads.Spec(cfg.FilePath)
+	spec, err := loads.Spec(cfg.FilePath)
 	if err != nil {
 		panic(err)
 	}
 
-	spec, err := json.Marshal(specDoc.Raw())
+	return spec
+}
+
+// Middleware returns a fiber.Handler (middleware) that renders OpenAPI specification using SwaggerUI.
+// Middleware creates a new middleware handler
+func Middleware(config ...Config) fiber.Handler {
+	// Set default config
+	cfg := configDefault(config...)
+
+	spec := loadSpec(cfg)
+
+	specJson, err := json.Marshal(spec.Raw())
 	if err != nil {
 		panic(err)
 	}
@@ -39,6 +45,33 @@ func New(config ...Config) fiber.Handler {
 			SpecURL: path.Join(cfg.BasePath, "swagger.json"),
 		}, next)
 
-		return middleware.Spec(cfg.BasePath, spec, swaggerUiHandler)
+		return middleware.Spec(cfg.BasePath, specJson, swaggerUiHandler)
 	})
+}
+
+// Router creates routes with handlers to renders OpenAPI specification using SwaggerUI.
+func Router(router fiber.Router, config ...Config) {
+	// Set default config
+	cfg := configDefault(config...)
+
+	spec := loadSpec(cfg)
+
+	router.Route(cfg.BasePath, func(router fiber.Router) {
+		router.Get("/", handleSwaggerUi(cfg)).Name("ui")
+		router.Get("/swagger.json", handleSwaggerJson(spec.Raw())).Name("spec")
+	}, "swagger.")
+}
+
+func handleSwaggerUi(cfg Config) fiber.Handler {
+	return adaptor.HTTPHandler(middleware.SwaggerUI(middleware.SwaggerUIOpts{
+		Path:    cfg.BasePath,
+		SpecURL: path.Join(cfg.BasePath, "swagger.json"),
+	}, nil))
+}
+
+func handleSwaggerJson(swagger json.RawMessage) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		c.Status(http.StatusOK).JSON(swagger)
+		return nil
+	}
 }

@@ -102,7 +102,8 @@ func main() {
 
 	middleware.Setup(app, logger)
 
-	routes.OpenApiRouter(app, fiberswagger.Config{
+	fiberswagger.Router(app, fiberswagger.Config{
+		BasePath: "/openapi",
 		FilePath: OpenApiSpecFile,
 	})
 
