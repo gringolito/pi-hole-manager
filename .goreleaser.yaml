@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+---
 before:
   hooks:
     - go mod tidy
@@ -32,7 +34,7 @@ archives:
 checksum:
   name_template: checksums.txt
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  name_template: "{{ incpatch .Version }}-g{{ .Summary }}"
 changelog:
   sort: asc
   filters:
@@ -59,15 +61,20 @@ nfpms:
       - src: ./config.yaml.dist
         dst: /etc/pi-hole-manager/config.yaml
         type: config
+        file_info:
+          mode: 0640
       - src: ./systemd/pi-hole-manager.service
         dst: /etc/systemd/system/pi-hole-manager.service
         type: config
       - src: ./systemd/pi-hole-manager
         dst: /etc/default/pi-hole-manager
         type: config
+    scripts:
+      postinstall: "scripts/postinstall.sh"
+      postremove: "scripts/postremove.sh"
     deb:
       lintian_overrides:
         - statically-linked-binary
         - changelog-file-missing-in-native-package
 
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+report_sizes: true
