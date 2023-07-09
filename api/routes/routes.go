@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gringolito/pi-hole-manager/api/handler"
+	"github.com/gringolito/pi-hole-manager/api/middleware/fiberswagger"
 	"github.com/gringolito/pi-hole-manager/pkg/host"
 )
 
@@ -19,4 +20,11 @@ func HostRouter(api fiber.Router, service host.Service) {
 
 func MetricsRouter(router fiber.Router, cfg monitor.Config) {
 	router.Get("/metrics", monitor.New(cfg))
+}
+
+func OpenApiRouter(router fiber.Router, openApiSpecFile string) {
+	fiberswagger.Router(router, fiberswagger.Config{
+		BasePath: "/openapi",
+		FilePath: openApiSpecFile,
+	})
 }
