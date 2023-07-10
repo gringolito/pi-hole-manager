@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 	"github.com/gringolito/pi-hole-manager/pkg/host"
 	"github.com/gringolito/pi-hole-manager/pkg/model"
 )
+
+var ErrInvalidQueryParam = errors.New("invalid query parameter specified, requires one of: [mac, ip]")
 
 func getHostFromBody(c *fiber.Ctx) *model.StaticDhcpHost {
 	host := new(dto.StaticDhcpHost)
@@ -60,9 +63,7 @@ func GetStaticHost(service host.Service) fiber.Handler {
 			return getStaticHostByIP(service, c, ipAddress)
 		}
 
-		return presenter.BadRequestResponse(c,
-			fmt.Errorf("invalid query parameter specified, requires one of: [mac, ip]"),
-		)
+		return presenter.BadRequestResponse(c, ErrInvalidQueryParam)
 	}
 }
 
@@ -143,9 +144,7 @@ func RemoveStaticHost(service host.Service) fiber.Handler {
 			return removeStaticHostByIP(service, c, ipAddress)
 		}
 
-		return presenter.BadRequestResponse(c,
-			fmt.Errorf("invalid query parameter specified, requires one of: [mac, ip]"),
-		)
+		return presenter.BadRequestResponse(c, ErrInvalidQueryParam)
 	}
 }
 

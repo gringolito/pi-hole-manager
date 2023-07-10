@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -13,10 +14,12 @@ type StaticDhcpHost struct {
 	HostName   string
 }
 
+var ErrInvalidDHCPHost = errors.New("invalid DHCP host entry")
+
 func (h *StaticDhcpHost) FromConfig(config string) error {
 	tokens := strings.Split(config, ",")
 	if len(tokens) != 3 {
-		return fmt.Errorf("Invalid DHCP host entry")
+		return ErrInvalidDHCPHost
 	}
 
 	var mac string
