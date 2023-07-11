@@ -28,3 +28,9 @@ go.work
 
 # Goreleaser distributables
 dist/
+
+# Application binary
+pi-hole-manager
+
+# Manual testing configuration files
+*.conf

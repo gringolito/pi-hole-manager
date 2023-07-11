@@ -11,15 +11,15 @@ type error struct {
 	Message string `json:"message"`
 }
 
-func newError(err validator.FieldError) *error {
+func newError(err validator.FieldError) error {
 	var message string
 	if err.Tag() == "required" {
-		message = fmt.Sprintf("Missing required field")
+		message = "missing required field"
 	} else {
-		message = fmt.Sprintf("Invalid value '%s' for type '%s'", err.Value(), err.Tag())
+		message = fmt.Sprintf("invalid value '%s' for type '%s'", err.Value(), err.Tag())
 	}
 
-	return &error{
+	return error{
 		Field:   err.Field(),
 		Message: message,
 	}
@@ -32,7 +32,7 @@ func Validate(obj interface{}) []error {
 	if err != nil {
 		errors := []error{}
 		for _, err := range err.(validator.ValidationErrors) {
-			errors = append(errors, *newError(err))
+			errors = append(errors, newError(err))
 		}
 		return errors
 	}
