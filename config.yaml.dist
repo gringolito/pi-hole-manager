@@ -5,13 +5,15 @@
 #   static:
 #     file: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
 
-# Uncomment this config block to enable authentication on the API endpoints and set the
-# username and password.
+# Uncomment this config block to set JWT-based authentication configuration for API endpoints.
+# Available methods: none, ecdsa-256, ecdsa-384, ecdsa-512, hmac-256, hmac-384, hmac-512, rsa-256,
+#   rsa-384 and rsa-512
+# Available key formats: public key data, public key file and plain-text secret
 # Defaults to: No authentication
 #
 # auth:
-#   username: user
-#   password: pass
+#   method: ecdsa-512
+#   key: /etc/pi-hole-manager/id_ecdsa.pub
 
 # Uncomment this config block to change the server HTTP listening port.
 # Defaults to: 6904

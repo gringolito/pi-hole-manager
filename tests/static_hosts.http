@@ -1,5 +1,9 @@
 ### Get All Static Hosts
 GET http://localhost:8080/api/v1/static/hosts
+# hmac-256
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJpYXQiOjE1MTYyMzkwMjJ9.QkiM5xh39VuVl-Ystu_I2rC4QHNQXB7pUjYZooaopAM
+# ecdsa-256
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjg5MjAzMjg5LCJleHAiOjE2ODkyMDY4ODl9.usREYY1xBV9mCe0mgQnHeGrR-2mnEh7Ni51Upec8ZQ9XiNelv23WJPkLqzXUB-Onj9tn-CbdOd0fzhiHTtnyAw
 
 ### Get Static Host By MAC Address
 GET http://localhost:8080/api/v1/static/host?mac=00:11:22:33:44:55

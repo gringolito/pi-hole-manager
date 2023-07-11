@@ -6,6 +6,21 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Auth.Method constants
+const (
+	NoAuth    = "none"
+	AuthES256 = "ecdsa-256"
+	AuthES384 = "ecdsa-384"
+	AuthES512 = "ecdsa-512"
+	AuthHS256 = "hmac-256"
+	AuthHS384 = "hmac-384"
+	AuthHS512 = "hmac-512"
+	AuthRS256 = "rsa-256"
+	AuthRS384 = "rsa-384"
+	AuthRS512 = "rsa-512"
+)
+
+// Log.Level constants
 const (
 	LogLevelDebug   = "debug"
 	LogLevelInfo    = "info"
@@ -13,6 +28,7 @@ const (
 	LogLevelError   = "error"
 )
 
+// Log.Format constants
 const (
 	LogFormatJSON      = "json"
 	LogFormatPlainText = "text"
@@ -26,8 +42,8 @@ const (
 
 type Config struct {
 	Auth struct {
-		Username string
-		Password string
+		Method string
+		Key    string
 	}
 	Host struct {
 		Static struct {
@@ -47,8 +63,9 @@ type Config struct {
 
 func newDefaultConfig() *Config {
 	def := Config{}
-	def.Host.Static.File = "/etc/dnsmasq.d/04-pihole-static-dhcp.conf"
-	def.Server.Port = 6904
+	def.Auth.Method = NoAuth
+	def.Host.Static.File = DefaultDhcpStaticHostFile
+	def.Server.Port = DefaultServerHttpPort
 	def.Log.Level = LogLevelInfo
 	def.Log.Format = LogFormatJSON
 

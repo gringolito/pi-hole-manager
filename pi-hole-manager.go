@@ -8,8 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
-	"github.com/gringolito/pi-hole-manager/api/middleware"
-	"github.com/gringolito/pi-hole-manager/api/routes"
+	"github.com/gringolito/pi-hole-manager/api"
 	"github.com/gringolito/pi-hole-manager/config"
 	"github.com/gringolito/pi-hole-manager/pkg/host"
 	"golang.org/x/exp/slog"
@@ -43,11 +42,12 @@ func setupLogger(cfg *config.Config) *slog.Logger {
 
 	var output io.Writer = os.Stdout
 	if cfg.Log.File != "" {
-		var err error
-		output, err = os.OpenFile(cfg.Log.File, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0660)
+		logFile, err := os.OpenFile(cfg.Log.File, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0660)
 		if err != nil {
 			log.Fatal("Failed to create log output file", err)
 		}
+
+		output = logFile
 	}
 
 	var handler slog.Handler
@@ -71,10 +71,10 @@ func setupLogger(cfg *config.Config) *slog.Logger {
 	return logger
 }
 
-func addHostApi(router fiber.Router, cfg *config.Config) {
+func addHostApi(router api.Router, cfg *config.Config) {
 	hostRepository := host.NewRepository(cfg.Host.Static.File)
 	hostService := host.NewService(hostRepository)
-	routes.HostRouter(router, hostService)
+	router.HostApi(hostService)
 }
 
 func main() {
@@ -93,17 +93,18 @@ func main() {
 		AppName:           fmt.Sprintf("%s %s (%s build)", AppName, AppVersion, BuildMode),
 	})
 
-	middleware.Setup(app, logger)
+	middleware, err := api.NewMiddleware(logger, cfg)
+	if err != nil {
+		logger.Error(err.Error(), slog.String("config", configName))
+		os.Exit(1)
+	}
 
-	routes.OpenApiRouter(app, OpenApiSpecFile)
-
-	routes.MetricsRouter(app, monitor.Config{
+	router := api.NewRouter(app, middleware)
+	router.SwaggerUI(OpenApiSpecFile)
+	router.Metrics(monitor.Config{
 		Title: fmt.Sprintf("%s Monitor", AppName),
 	})
-
-	api := app.Group("/api")
-	v1 := api.Group("/v1")
-	addHostApi(v1, cfg)
+	addHostApi(router, cfg)
 
 	if err := app.Listen(fmt.Sprintf(":%d", cfg.Server.Port)); err != nil {
 		logger.Error(err.Error(), slog.Int("listeningPort", cfg.Server.Port))
