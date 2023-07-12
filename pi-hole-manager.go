@@ -28,12 +28,6 @@ var (
 )
 
 func setupLogger(cfg *config.Config) *slog.Logger {
-	// Defaults to false
-	addSource := map[string]bool{
-		config.Development: true,
-		config.Test:        true,
-	}
-
 	// Defaults to slog.LevelInfo
 	logLevel := map[string]slog.Level{
 		config.LogLevelError:   slog.LevelError,
@@ -43,7 +37,7 @@ func setupLogger(cfg *config.Config) *slog.Logger {
 	}
 
 	options := &slog.HandlerOptions{
-		AddSource: addSource[cfg.Environment],
+		AddSource: cfg.Log.Source,
 		Level:     logLevel[cfg.Log.Level],
 	}
 
@@ -91,7 +85,7 @@ func main() {
 	}
 
 	logger := setupLogger(cfg)
-	logger.Info("Starting app", slog.String("environment", cfg.Environment))
+	logger.Info("Starting app", slog.String("config", configName))
 
 	app := fiber.New(fiber.Config{
 		CaseSensitive:     true,
@@ -112,7 +106,7 @@ func main() {
 	addHostApi(v1, cfg)
 
 	if err := app.Listen(fmt.Sprintf(":%d", cfg.Server.Port)); err != nil {
-		logger.Error(err.Error(), slog.Int("ListeningPort", cfg.Server.Port))
+		logger.Error(err.Error(), slog.Int("listeningPort", cfg.Server.Port))
 		os.Exit(1)
 	}
 }

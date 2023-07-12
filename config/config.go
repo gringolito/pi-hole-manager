@@ -18,10 +18,10 @@ const (
 	LogFormatPlainText = "text"
 )
 
+// Other default constants
 const (
-	Production  = "production"
-	Test        = "test"
-	Development = "dev"
+	DefaultDhcpStaticHostFile = "/etc/dnsmasq.d/04-pihole-static-dhcp.conf"
+	DefaultServerHttpPort     = 6904
 )
 
 type Config struct {
@@ -41,8 +41,8 @@ type Config struct {
 		Level  string
 		File   string
 		Format string
+		Source bool
 	}
-	Environment string
 }
 
 func newDefaultConfig() *Config {
@@ -51,7 +51,6 @@ func newDefaultConfig() *Config {
 	def.Server.Port = 6904
 	def.Log.Level = LogLevelInfo
 	def.Log.Format = LogFormatJSON
-	def.Environment = Production
 
 	return &def
 }

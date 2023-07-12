@@ -28,3 +28,4 @@
 #   level: info
 #   format: json
 #   file: /var/log/pi-hole-manager.log
+#   source: false

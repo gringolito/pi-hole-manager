@@ -1,5 +1,3 @@
-environment: test
-
 host:
   static:
     file: ./04-pihole-static-dhcp.conf
@@ -15,3 +13,4 @@ log:
   level: debug
   format: text
   # file: app.log
+  source: true
