@@ -16,7 +16,7 @@ functionality of the pi-hole or the FTL.
 
 ### MVP
 
-- [ ] Add authentication / authorization control over the routes
+- [x] Add authentication / authorization control over the routes
 - [x] Improve logging with severity classified messages
 - [x] Move routes to a /api/v1 prefix
 - [x] Make the system configurable (maybe use Viper?)
