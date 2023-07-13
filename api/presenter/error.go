@@ -6,6 +6,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type ErrorMessage struct {
+	Error   string      `json:"error"`
+	Message string      `json:"message"`
+	Details interface{} `json:"details"`
+}
+
 func ErrorResponse(c *fiber.Ctx, httpStatus int, err error) error {
 	return c.Status(httpStatus).JSON(fiber.Map{"error": err.Error()})
 }
