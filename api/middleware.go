@@ -5,14 +5,17 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/gringolito/pi-hole-manager/api/middleware/fiberslog"
 	"github.com/gringolito/pi-hole-manager/config"
+	"golang.org/x/exp/slices"
 	"golang.org/x/exp/slog"
 )
 
@@ -138,7 +141,22 @@ type middleware struct {
 	requestId      fiber.Handler
 }
 
-func (m middleware) Authentication() fiber.Handler {
+func (m middleware) Authentication(requiredRole string) fiber.Handler {
+	func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*jwt.Token)
+		claims := user.Claims.(jwt.MapClaims)
+		groups := claims["groups"].([]string)
+
+		if !slices.Contains[string](groups, requiredRole) {
+			return c.Status(http.StatusForbidden).JSON(fiber.Map{
+				"error":   "Forbidden",
+				"message": "You do not have permission to access this resource.",
+				"details": "The user does not have the required role to access this resource.",
+			})
+		}
+
+		return c.Next()
+	}
 	return m.authentication
 }
 
