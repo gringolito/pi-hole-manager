@@ -37,3 +37,4 @@ pi-hole-manager
 
 # JWT signing keys
 *.pem
+*.pub
