@@ -34,7 +34,7 @@ func NewRouter(root fiber.Router, mw Middleware) Router {
 
 func (r Router) HostApi(service host.Service) {
 	r.apiv1.Route("/static", func(router fiber.Router) {
-		router.Use(r.mw.Authentication())
+		router.Use(r.mw.Authentication("dhcp:admin"))
 		router.Get("/hosts", handler.GetAllStaticHosts(service)).Name("get_all")
 		router.Get("/host", handler.GetStaticHost(service)).Name("get")
 		router.Post("/host", handler.AddStaticHost(service)).Name("add")
