@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -12,19 +11,49 @@ import (
 	"github.com/gringolito/pi-hole-manager/api/validation"
 	"github.com/gringolito/pi-hole-manager/pkg/host"
 	"github.com/gringolito/pi-hole-manager/pkg/model"
+	"golang.org/x/exp/slog"
 )
 
-var ErrInvalidQueryParam = errors.New("invalid query parameter specified, requires one of: [mac, ip]")
+// Error messages
+const (
+	StaticHostNotFoundMessage   = "No DHCP static host found for the given identifier."
+	InvalidRequestMessage       = "The request is invalid."
+	InvalidRequestBodyMessage   = "The request body was invalid."
+	InvalidMacAddressMessage    = "The MAC address is invalid."
+	DuplicatedMacAddressMessage = "A host with the same MAC address already exists."
+	DuplicatedIPAddressMessage  = "The IP address is already in use."
+)
+
+// Details
+const (
+	NoMatchingIPAddress = "The DHCP server could not find a static host that matches the given IP address. " +
+		"This could be because the host does not exist, or because the DHCP server is not configured to statically " +
+		"assign an IP address to the given host. The IP address that was provided was: %s."
+	NoMatchingMacAddress = "The DHCP server could not find a static host that matches the given MAC address. " +
+		"This could be because the host does not exist, or because the DHCP server is not configured to statically " +
+		"assign an IP address to the given host. The MAC address that was provided was: %s."
+	MissingQueryParameter = "The request did not specify either the `mac` or `ip` query parameter. " +
+		"Please specify one of these parameters in order to proceed."
+	MalformedMacAddress = "The MAC address that was provided is not in the correct format. " +
+		"Please check the format of the MAC address and try again. The MAC address that was provided was: %s."
+	IPAddressAlreadyInUse = "The IP address that was provided is already in use by another host. " +
+		"Please try again with a different IP address. The IP address that was provided was: %s."
+	MacAddressAlreadyInUse = "The MAC address that was provided is already in use by another host: %s."
+	HostCouldNotBeParsed   = "The request could not be processed because the host could not be parsed. Please check the request and try again."
+)
 
 func getHostFromBody(c *fiber.Ctx) *model.StaticDhcpHost {
 	host := new(dto.StaticDhcpHost)
 	if err := c.BodyParser(host); err != nil {
-		presenter.InternalServerErrorResponse(c, err)
+		slog.Debug("Failed to parse host from the body",
+			slog.String("error", err.Error()),
+		)
+		presenter.UnprocessableEntityResponse(c, InvalidRequestBodyMessage, HostCouldNotBeParsed)
 		return nil
 	}
 
 	if errors := validation.Validate(host); errors != nil {
-		c.Status(http.StatusBadRequest).JSON(fiber.Map{"errors": errors})
+		presenter.UnprocessableEntityResponse(c, InvalidRequestBodyMessage, errors)
 		return nil
 	}
 
@@ -44,7 +73,7 @@ func GetAllStaticHosts(service host.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		hosts, err := service.FetchAll()
 		if err != nil {
-			return presenter.InternalServerErrorResponse(c, err)
+			return presenter.InternalServerErrorResponse(c)
 		}
 
 		return c.Status(http.StatusOK).JSON(toStaticDhcpHostsDto(hosts))
@@ -63,22 +92,26 @@ func GetStaticHost(service host.Service) fiber.Handler {
 			return getStaticHostByIP(service, c, ipAddress)
 		}
 
-		return presenter.BadRequestResponse(c, ErrInvalidQueryParam)
+		return presenter.BadRequestResponse(c, InvalidRequestMessage, MissingQueryParameter)
 	}
 }
 
 func getStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string) error {
 	mac, err := net.ParseMAC(macAddress)
 	if err != nil {
-		return presenter.BadRequestResponse(c, err)
+		slog.Debug("Could not parse MAC address",
+			slog.String("macAddress", macAddress),
+			slog.String("error", err.Error()),
+		)
+		return presenter.BadRequestResponse(c, InvalidMacAddressMessage, fmt.Sprintf(MalformedMacAddress, macAddress))
 	}
 
 	host, err := service.FetchByMac(mac)
 	if err != nil {
-		return presenter.InternalServerErrorResponse(c, err)
+		return presenter.InternalServerErrorResponse(c)
 	}
 	if host == nil {
-		return presenter.NotFoundResponse(c, fmt.Errorf("MAC address '%s' not found", macAddress))
+		return presenter.NotFoundResponse(c, StaticHostNotFoundMessage, fmt.Sprintf(NoMatchingMacAddress, macAddress))
 	}
 
 	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
@@ -87,10 +120,10 @@ func getStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string) e
 func getStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) error {
 	host, err := service.FetchByIP(net.ParseIP(ipAddress))
 	if err != nil {
-		return presenter.InternalServerErrorResponse(c, err)
+		return presenter.InternalServerErrorResponse(c)
 	}
 	if host == nil {
-		return presenter.NotFoundResponse(c, fmt.Errorf("IP address '%s' not found", ipAddress))
+		return presenter.NotFoundResponse(c, StaticHostNotFoundMessage, fmt.Sprintf(NoMatchingIPAddress, ipAddress))
 	}
 
 	return c.Status(http.StatusOK).JSON(dto.NewStaticDhcpHost(host))
@@ -105,10 +138,18 @@ func AddStaticHost(service host.Service) fiber.Handler {
 		}
 
 		if err := service.Insert(h); err != nil {
-			if _, ok := err.(host.DuplicatedEntryError); ok {
-				return presenter.BadRequestResponse(c, err)
+			if e, ok := err.(host.DuplicatedEntryError); ok {
+				slog.Debug("Could not add a new static host because a conflict was detected",
+					slog.Any("host", h),
+					slog.String("error", err.Error()),
+				)
+				if e.Field == "IP" {
+					return presenter.ConflictResponse(c, DuplicatedIPAddressMessage, fmt.Sprintf(IPAddressAlreadyInUse, h.IPAddress.String()))
+				} else {
+					return presenter.ConflictResponse(c, DuplicatedMacAddressMessage, fmt.Sprintf(MacAddressAlreadyInUse, h.MacAddress.String()))
+				}
 			} else {
-				return presenter.InternalServerErrorResponse(c, err)
+				return presenter.InternalServerErrorResponse(c)
 			}
 		}
 
@@ -125,7 +166,7 @@ func UpdateStaticHost(service host.Service) fiber.Handler {
 		}
 
 		if err := service.Update(host); err != nil {
-			return presenter.InternalServerErrorResponse(c, err)
+			return presenter.InternalServerErrorResponse(c)
 		}
 
 		return c.Status(http.StatusCreated).JSON(dto.NewStaticDhcpHost(host))
@@ -144,19 +185,23 @@ func RemoveStaticHost(service host.Service) fiber.Handler {
 			return removeStaticHostByIP(service, c, ipAddress)
 		}
 
-		return presenter.BadRequestResponse(c, ErrInvalidQueryParam)
+		return presenter.BadRequestResponse(c, InvalidRequestMessage, MissingQueryParameter)
 	}
 }
 
 func removeStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string) error {
 	mac, err := net.ParseMAC(macAddress)
 	if err != nil {
-		return presenter.BadRequestResponse(c, err)
+		slog.Debug("Could not parse MAC address",
+			slog.String("macAddress", macAddress),
+			slog.String("error", err.Error()),
+		)
+		return presenter.BadRequestResponse(c, InvalidMacAddressMessage, fmt.Sprintf(MalformedMacAddress, macAddress))
 	}
 
 	host, err := service.RemoveByMac(mac)
 	if err != nil {
-		return presenter.InternalServerErrorResponse(c, err)
+		return presenter.InternalServerErrorResponse(c)
 	}
 	if host == nil {
 		return c.SendStatus(http.StatusNoContent)
@@ -168,7 +213,7 @@ func removeStaticHostByMac(service host.Service, c *fiber.Ctx, macAddress string
 func removeStaticHostByIP(service host.Service, c *fiber.Ctx, ipAddress string) error {
 	host, err := service.RemoveByIP(net.ParseIP(ipAddress))
 	if err != nil {
-		return presenter.InternalServerErrorResponse(c, err)
+		return presenter.InternalServerErrorResponse(c)
 	}
 	if host == nil {
 		return c.SendStatus(http.StatusNoContent)

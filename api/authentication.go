@@ -8,8 +8,18 @@ import (
 	"os"
 
 	jwtware "github.com/gofiber/contrib/jwt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gringolito/pi-hole-manager/api/presenter"
 	"github.com/gringolito/pi-hole-manager/config"
 	"golang.org/x/exp/slog"
+)
+
+const (
+	UnauthorizedMessage   = "The request is unauthorized."
+	MissingOrMalformedJWT = "The request did not include a JWT or the JWT was malformed. " +
+		"Please include a valid JWT in the request header."
+	InvalidOrExpiredJWT = "The JWT that was sent is invalid or expired. " +
+		"Please re-authenticate and try again."
 )
 
 func setupJwtConfig(cfg *config.Config) (*jwtware.Config, error) {
@@ -19,7 +29,7 @@ func setupJwtConfig(cfg *config.Config) (*jwtware.Config, error) {
 
 	signingMethod, pemEncoded, err := getAuthSigningMethod(cfg.Auth.Method)
 	if err != nil {
-		slog.Debug("invalid authentication signing method, please check your configuration",
+		slog.Debug("Invalid authentication signing method, please check your configuration",
 			slog.Group("config",
 				slog.Group("auth",
 					slog.String("method", cfg.Auth.Method))),
@@ -29,7 +39,7 @@ func setupJwtConfig(cfg *config.Config) (*jwtware.Config, error) {
 
 	signingKey, err := getAuthSigningKey(cfg.Auth.Key, pemEncoded)
 	if err != nil {
-		slog.Debug("invalid or malformed authentication signing key, please check your configuration",
+		slog.Debug("Invalid or malformed authentication signing key, please check your configuration",
 			slog.Group("config",
 				slog.Group("auth",
 					slog.String("method", cfg.Auth.Method))),
@@ -42,6 +52,7 @@ func setupJwtConfig(cfg *config.Config) (*jwtware.Config, error) {
 			JWTAlg: signingMethod,
 			Key:    signingKey,
 		},
+		ErrorHandler: jwtErrorHandler,
 	}, nil
 }
 
@@ -93,4 +104,18 @@ func getAuthSigningKey(authKey string, pemEncoded bool) (interface{}, error) {
 	}
 
 	return publicKey, nil
+}
+
+func jwtErrorHandler(c *fiber.Ctx, err error) error {
+	if err == jwtware.ErrJWTMissingOrMalformed {
+		slog.Debug("Missing or malformed JWT",
+			slog.String("error", err.Error()),
+		)
+		return presenter.UnauthorizedResponse(c, UnauthorizedMessage, MissingOrMalformedJWT)
+	}
+
+	slog.Debug("Failed to validate JWT",
+		slog.String("error", err.Error()),
+	)
+	return presenter.UnauthorizedResponse(c, UnauthorizedMessage, InvalidOrExpiredJWT)
 }

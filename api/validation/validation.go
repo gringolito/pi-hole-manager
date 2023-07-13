@@ -7,21 +7,23 @@ import (
 )
 
 type error struct {
-	Field   string `json:"field"`
-	Message string `json:"message"`
+	Field  string      `json:"field"`
+	Reason string      `json:"reason"`
+	Value  interface{} `json:"value"`
 }
 
 func newError(err validator.FieldError) error {
-	var message string
+	var reason string
 	if err.Tag() == "required" {
-		message = "missing required field"
+		reason = fmt.Sprintf("The %s field is required.", err.Field())
 	} else {
-		message = fmt.Sprintf("invalid value '%s' for type '%s'", err.Value(), err.Tag())
+		reason = fmt.Sprintf("The %s field must be of type %s.", err.Field(), err.Tag())
 	}
 
 	return error{
-		Field:   err.Field(),
-		Message: message,
+		Field:  err.Field(),
+		Reason: reason,
+		Value:  err.Value(),
 	}
 }
 
@@ -30,9 +32,10 @@ var validate = validator.New()
 func Validate(obj interface{}) []error {
 	err := validate.Struct(obj)
 	if err != nil {
-		errors := []error{}
-		for _, err := range err.(validator.ValidationErrors) {
-			errors = append(errors, newError(err))
+		numErrors := len(err.(validator.ValidationErrors))
+		errors := make([]error, 0, numErrors)
+		for _, fieldError := range err.(validator.ValidationErrors) {
+			errors = append(errors, newError(fieldError))
 		}
 		return errors
 	}

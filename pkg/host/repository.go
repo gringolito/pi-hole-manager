@@ -118,7 +118,16 @@ func (r *repository) save(hosts *[]model.StaticDhcpHost) error {
 		config = append(config, host.ToConfig())
 	}
 
-	return os.WriteFile(r.staticHostsFilePath, []byte(strings.Join(config, "\n")), os.FileMode(0644))
+	err := os.WriteFile(r.staticHostsFilePath, []byte(strings.Join(config, "\n")), os.FileMode(0644))
+	if err != nil {
+		slog.Error("Error writing into the static hosts file",
+			slog.String("file", r.staticHostsFilePath),
+			slog.String("error", err.Error()),
+		)
+		return err
+	}
+
+	return nil
 }
 
 func (r *repository) delete(filter Filter) (*model.StaticDhcpHost, error) {

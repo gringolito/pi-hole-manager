@@ -1,23 +1,54 @@
 package presenter
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func ErrorResponse(c *fiber.Ctx, httpStatus int, err error) error {
-	return c.Status(httpStatus).JSON(fiber.Map{"error": err.Error()})
+type errorMessage struct {
+	Error   string      `json:"error"`
+	Message string      `json:"message"`
+	Details interface{} `json:"details"`
 }
 
-func InternalServerErrorResponse(c *fiber.Ctx, err error) error {
-	return ErrorResponse(c, http.StatusInternalServerError, err)
+func ErrorResponse(c *fiber.Ctx, httpStatus int, message string, details interface{}) error {
+	return c.Status(httpStatus).JSON(errorMessage{
+		Error:   http.StatusText(httpStatus),
+		Message: message,
+		Details: details,
+	})
 }
 
-func BadRequestResponse(c *fiber.Ctx, err error) error {
-	return ErrorResponse(c, http.StatusBadRequest, err)
+func InternalServerErrorResponse(c *fiber.Ctx) error {
+	requestId := c.Locals("requestid").(string)
+
+	return ErrorResponse(c, http.StatusInternalServerError,
+		"An error occurred on the server.",
+		fmt.Sprintf("An internal server error occurred. Please contact the administrator and provide the following request ID: %s.", requestId))
 }
 
-func NotFoundResponse(c *fiber.Ctx, err error) error {
-	return ErrorResponse(c, http.StatusNotFound, err)
+func UnprocessableEntityResponse(c *fiber.Ctx, message string, details interface{}) error {
+	return ErrorResponse(c, http.StatusUnprocessableEntity, message, details)
+}
+
+func ConflictResponse(c *fiber.Ctx, message string, details string) error {
+	return ErrorResponse(c, http.StatusConflict, message, details)
+}
+
+func BadRequestResponse(c *fiber.Ctx, message string, details string) error {
+	return ErrorResponse(c, http.StatusBadRequest, message, details)
+}
+
+func NotFoundResponse(c *fiber.Ctx, message string, details string) error {
+	return ErrorResponse(c, http.StatusNotFound, message, details)
+}
+
+func ForbiddenResponse(c *fiber.Ctx, message string, details string) error {
+	return ErrorResponse(c, http.StatusForbidden, message, details)
+}
+
+func UnauthorizedResponse(c *fiber.Ctx, message string, details string) error {
+	return ErrorResponse(c, http.StatusUnauthorized, message, details)
 }
