@@ -14,7 +14,7 @@ info:
         Some useful links:
     - [Pi-Hole Manager repository](https://github.com/gringolito/pi-hole-manager)
   contact:
-    email: filipeutzig@gmail.com
+    email: filipe@gringolito.com
   license:
     name: Beerware
     url: https://raw.githubusercontent.com/gringolito/pi-hole-manager/master/LICENSE
@@ -54,7 +54,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-      - api_key: []
+      - jwtToken: [ "dhcp:read", "dhcp:write", "dhcp:admin" ]
 
   /static/host:
     get:
@@ -102,7 +102,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-      - api_key: []
+      - jwtToken: [ "dhcp:read", "dhcp:write", "dhcp:admin" ]
 
     put:
       tags:
@@ -137,7 +137,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-      - api_key: []
+      - jwtToken: [ "dhcp:admin" ]
 
     post:
       tags:
@@ -172,7 +172,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-      - api_key: []
+      - jwtToken: [ "dhcp:write", "dhcp:admin" ]
 
     delete:
       tags:
@@ -222,7 +222,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-      - api_key: []
+      - jwtToken: [ "dhcp:admin" ]
 
 components:
   schemas:
@@ -254,7 +254,7 @@ components:
           example: something went wrong
 
   securitySchemes:
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    jwtToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

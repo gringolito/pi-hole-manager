@@ -1,17 +1,22 @@
 ### Get All Static Hosts
 GET http://localhost:8080/api/v1/static/hosts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 
 ### Get Static Host By MAC Address
 GET http://localhost:8080/api/v1/static/host?mac=00:11:22:33:44:55
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 
 ### Get Static Host By IP Address
 GET http://localhost:8080/api/v1/static/host?ip=192.168.11.199
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 
 ### Get Static Host Invalid
 GET http://localhost:8080/api/v1/static/host
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 
 ### Add Static Host - Missing fields
 POST http://localhost:8080/api/v1/static/host
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 Content-Type: application/json
 
 {
@@ -19,6 +24,7 @@ Content-Type: application/json
 
 ### Add Static Host - Invalid fields
 POST http://localhost:8080/api/v1/static/host
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 Content-Type: application/json
 
 {
@@ -29,6 +35,7 @@ Content-Type: application/json
 
 ### Add Static Host
 POST http://localhost:8080/api/v1/static/host
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 Content-Type: application/json
 
 {
@@ -39,6 +46,7 @@ Content-Type: application/json
 
 ### Update Static Host
 PUT http://localhost:8080/api/v1/static/host
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 Content-Type: application/json
 
 {
@@ -49,9 +57,12 @@ Content-Type: application/json
 
 ### Delete Static Host By MAC Address
 DELETE http://localhost:8080/api/v1/static/host?mac=00:11:22:33:44:55
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 
 ### Delete Static Host By IP Address
 DELETE http://localhost:8080/api/v1/static/host?ip=192.168.11.198
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI
 
 ### Delete Static Host Invalid
 DELETE http://localhost:8080/api/v1/static/host
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhlbnJpcXVlIEp1bmciLCJzY29wZSI6ImRuczpyZWFkIGRoY3A6YWRtaW4iLCJpYXQiOjE1MTYyMzkwMjJ9.rsl-3DObyHAUmC_NUN4qJWO6EbkWxkTmDme1WXHekwI

@@ -34,3 +34,7 @@ pi-hole-manager
 
 # Manual testing configuration files
 *.conf
+
+# JWT signing keys
+*.pem
+*.pub

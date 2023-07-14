@@ -3,8 +3,8 @@ host:
     file: ./04-pihole-static-dhcp.conf
 
 auth:
-  username: foo
-  password: bar
+  method: hmac-256
+  key: FooBar77
 
 server:
   port: 8080
