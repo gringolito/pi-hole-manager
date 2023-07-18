@@ -124,7 +124,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DHCPHost'
-        400:
+        422:
           description: Invalid input
           content:
             application/json:
@@ -159,7 +159,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DHCPHost'
-        400:
+        409:
+          description: The given IP/MAC address is already being used by another host
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        422:
           description: Invalid input
           content:
             application/json:
@@ -209,12 +215,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Host not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         500:
           description: Internal server error
           content:
@@ -246,12 +246,35 @@ components:
           format: hostname
           example: foo.bar
 
+    FieldError:
+      type: object
+      properties:
+        field:
+          type: string
+          example: MacAddress
+        reason:
+          type: string
+          example: The MacAddress must be of type mac.
+        value:
+          type: string
+          example: "co:ff:ee:co:ff:ee"
+
     ErrorResponse:
       type: object
       properties:
         error:
           type: string
-          example: something went wrong
+          example: Bad Request
+        message:
+          type: string
+          example: The request is invalid.
+        details:
+          oneOf:
+            - type: string
+              example: The request could not be processed because the host could not be parsed. Please check the request and try again.
+            - type: array
+              items:
+                $ref: '#/components/schemas/FieldError'
 
   securitySchemes:
     jwtToken:

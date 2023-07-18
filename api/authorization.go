@@ -1,13 +1,19 @@
 package api
 
 import (
-	"net/http"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/gringolito/pi-hole-manager/api/presenter"
 	"golang.org/x/exp/slices"
 	"golang.org/x/exp/slog"
+)
+
+const (
+	NotAuthorizedMessage = "You do not have permission to access this resource."
+	MalformedJwt         = "The user provided a malformed JWT."
+	MissingRole          = "The user does not have the required role to access this resource."
 )
 
 func authorizationHandler(jwtContextKey string, roles []string) fiber.Handler {
@@ -18,30 +24,30 @@ func authorizationHandler(jwtContextKey string, roles []string) fiber.Handler {
 
 		scopes, err := parseClaimScope(claims)
 		if err != nil {
-			slog.Debug("authorization denied: malformed JWT claim 'scope'", slog.String("user", name))
-			return c.Status(http.StatusForbidden).JSON(fiber.Map{
-				"error":   "Forbidden",
-				"message": "You do not have permission to access this resource.",
-				"details": "The user provided a malformed JWT.",
-			})
+			slog.Debug("Authorization denied: malformed JWT claim 'scope'",
+				slog.String("user", name),
+				slog.String("error", err.Error()),
+			)
+			return presenter.ForbiddenResponse(c, NotAuthorizedMessage, MalformedJwt)
 		}
 
 		authorized := false
 		for _, role := range roles {
 			if slices.Contains[string](scopes, role) {
 				authorized = true
-				slog.Debug("authorization granted", slog.String("user", name), slog.String("role", role))
+				slog.Debug("Authorization granted",
+					slog.String("user", name),
+					slog.String("role", role),
+				)
 				break
 			}
 		}
 
 		if !authorized {
-			slog.Debug("authorization denied: required role not found", slog.String("user", name))
-			return c.Status(http.StatusForbidden).JSON(fiber.Map{
-				"error":   "Forbidden",
-				"message": "You do not have permission to access this resource.",
-				"details": "The user does not have the required role to access this resource.",
-			})
+			slog.Debug("Authorization denied: required role not found",
+				slog.String("user", name),
+			)
+			return presenter.ForbiddenResponse(c, NotAuthorizedMessage, MissingRole)
 		}
 
 		return c.Next()
