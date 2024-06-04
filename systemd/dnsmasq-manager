@@ -1,0 +1,4 @@
+# Command line options for dnsmasq-manager.service
+# See also /etc/dnsmasq-manager/config.yaml
+
+ARGS=""

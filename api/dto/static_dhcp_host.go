@@ -3,7 +3,7 @@ package dto
 import (
 	"net"
 
-	"github.com/gringolito/pi-hole-manager/pkg/model"
+	"github.com/gringolito/dnsmasq-manager/pkg/model"
 )
 
 type StaticDhcpHost struct {

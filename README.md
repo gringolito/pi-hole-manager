@@ -1,16 +1,13 @@
-# pi-hole-manager
+# dnsmasq-manager
 
-Pi-Hole Local DNS / DHCP management API
+Dnsmasq DNS / DHCP management API
 
-This project provides a RESTful API to manage some of the DHCP/DNS resources on a pi-hole
-installation, like:
+This project provides a RESTful API to manage some of the DHCP/DNS resources on a dnsmasq
+server, like:
 
 - Manage static DHCP entries
-- Manage local DNS entries
+- Manage static DNS entries
 - Manage CNAME aliases
-
-We are not interested on managing the Adlists, Whitelists, Query logs or any other primary
-functionality of the pi-hole or the FTL.
 
 ## TO-DO
 
@@ -30,5 +27,5 @@ functionality of the pi-hole or the FTL.
 
 ### Phase-2
 
-- [ ] Manage local DNS entries
+- [ ] Manage static DNS entries
 - [ ] Manage CNAME alias

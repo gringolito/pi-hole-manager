@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gringolito/pi-hole-manager/api/dto"
-	"github.com/gringolito/pi-hole-manager/api/presenter"
-	"github.com/gringolito/pi-hole-manager/api/validation"
-	"github.com/gringolito/pi-hole-manager/pkg/host"
-	"github.com/gringolito/pi-hole-manager/pkg/model"
+	"github.com/gringolito/dnsmasq-manager/api/dto"
+	"github.com/gringolito/dnsmasq-manager/api/presenter"
+	"github.com/gringolito/dnsmasq-manager/api/validation"
+	"github.com/gringolito/dnsmasq-manager/pkg/host"
+	"github.com/gringolito/dnsmasq-manager/pkg/model"
 	"golang.org/x/exp/slog"
 )
 

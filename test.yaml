@@ -1,6 +1,6 @@
 host:
   static:
-    file: ./04-pihole-static-dhcp.conf
+    file: ./04-dhcp-static-leases.conf
 
 auth:
   method: hmac-256

@@ -1,11 +1,11 @@
 #!/bin/sh
 
 remove() {
-    systemctl disable pi-hole-manager.service ||:
+    systemctl disable dnsmasq-manager.service ||:
 }
 
 purge() {
-    rm -rf /etc/pi-hole-manager
+    rm -rf /etc/dnsmasq-manager
 }
 
 upgrade() {

@@ -8,14 +8,14 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
-	"github.com/gringolito/pi-hole-manager/api"
-	"github.com/gringolito/pi-hole-manager/config"
-	"github.com/gringolito/pi-hole-manager/pkg/host"
+	"github.com/gringolito/dnsmasq-manager/api"
+	"github.com/gringolito/dnsmasq-manager/config"
+	"github.com/gringolito/dnsmasq-manager/pkg/host"
 	"golang.org/x/exp/slog"
 )
 
 const (
-	AppName    = "Pi-Hole Manager"
+	AppName    = "dnsmasq Manager"
 	AppVersion = "v0.1.0"
 )
 

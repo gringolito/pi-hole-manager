@@ -6,26 +6,26 @@ install() {
     # even if you want your service to run as non root.
     if [ "${systemd_version}" -lt 231 ]; then
         printf "\033[31m  systemd version %s is less then 231, fixing the service file \033[0m\n" "${systemd_version}"
-        sed -i "s/=+/=/g" /etc/systemd/system/pi-hole-manager.service
+        sed -i "s/=+/=/g" /etc/systemd/system/dnsmasq-manager.service
     fi
     systemctl daemon-reload ||:
-    systemctl unmask pi-hole-manager.service ||:
-    systemctl preset pi-hole-manager.service ||:
-    systemctl enable pi-hole-manager.service ||:
+    systemctl unmask dnsmasq-manager.service ||:
+    systemctl preset dnsmasq-manager.service ||:
+    systemctl enable dnsmasq-manager.service ||:
     printf "\n"
-    printf "  pi-hole-manager service is enabled to start on the next system boot but it is not set to start automatically upon installation.\n"
+    printf "  dnsmasq-manager service is enabled to start on the next system boot but it is not set to start automatically upon installation.\n"
     printf "\n"
     printf "  Please check the security configuration in:\n"
-    printf "    /etc/pi-hole-manager/config.yaml\n"
+    printf "    /etc/dnsmasq-manager/config.yaml\n"
     printf "\n"
     printf "  and start the service with:\n"
-    printf "    systemctl start pi-hole-manager.service\n"
+    printf "    systemctl start dnsmasq-manager.service\n"
     printf "\n"
 }
 
 upgrade() {
-    printf "\033[32m  Reloading pi-hole-manager service\033[0m\n"
-    systemctl try-restart pi-hole-manager.service ||:
+    printf "\033[32m  Reloading dnsmasq-manager service\033[0m\n"
+    systemctl try-restart dnsmasq-manager.service ||:
 }
 
 # Step 2, check if this is a clean install or an upgrade

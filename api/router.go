@@ -3,10 +3,10 @@ package api
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
-	"github.com/gringolito/pi-hole-manager/api/handler"
-	"github.com/gringolito/pi-hole-manager/api/middleware/fiberswagger"
-	"github.com/gringolito/pi-hole-manager/api/scope"
-	"github.com/gringolito/pi-hole-manager/pkg/host"
+	"github.com/gringolito/dnsmasq-manager/api/handler"
+	"github.com/gringolito/dnsmasq-manager/api/middleware/fiberswagger"
+	"github.com/gringolito/dnsmasq-manager/api/scope"
+	"github.com/gringolito/dnsmasq-manager/pkg/host"
 )
 
 type Router struct {

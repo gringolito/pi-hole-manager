@@ -1,9 +1,9 @@
-# Uncomment this config block to set the Pi-Hole static DHCP hosts file.
-# Defaults to: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
+# Uncomment this config block to set the dnsmasq static DHCP hosts file.
+# Defaults to: /etc/dnsmasq.d/04-dhcp-static-leases.conf
 #
 # host:
 #   static:
-#     file: /etc/dnsmasq.d/04-pihole-static-dhcp.conf
+#     file: /etc/dnsmasq.d/04-dhcp-static-leases.conf
 
 # Uncomment this config block to set JWT-based authentication configuration for API endpoints.
 # Available methods: none, ecdsa-256, ecdsa-384, ecdsa-512, hmac-256, hmac-384, hmac-512, rsa-256,
@@ -13,7 +13,7 @@
 #
 # auth:
 #   method: ecdsa-512
-#   key: /etc/pi-hole-manager/id_ecdsa.pub
+#   key: /etc/dnsmasq-manager/id_ecdsa.pub
 
 # Uncomment this config block to change the server HTTP listening port.
 # Defaults to: 6904
@@ -29,5 +29,5 @@
 # log:
 #   level: info
 #   format: json
-#   file: /var/log/pi-hole-manager.log
+#   file: /var/log/dnsmasq-manager.log
 #   source: false

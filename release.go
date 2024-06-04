@@ -4,5 +4,5 @@ package main
 
 func init() {
 	BuildMode = "Release"
-	OpenApiSpecFile = "/usr/share/pi-hole-manager/spec/openapi.yaml"
+	OpenApiSpecFile = "/usr/share/dnsmasq-manager/spec/openapi.yaml"
 }

@@ -36,7 +36,7 @@ const (
 
 // Other default constants
 const (
-	DefaultDhcpStaticHostFile = "/etc/dnsmasq.d/04-pihole-static-dhcp.conf"
+	DefaultDhcpStaticHostFile = "/etc/dnsmasq.d/04-dhcp-static-leases.conf"
 	DefaultServerHttpPort     = 6904
 )
 
@@ -73,11 +73,11 @@ func newDefaultConfig() *Config {
 }
 
 func Init(configName string) (*Config, error) {
-	viper.AddConfigPath("/etc/pi-hole-monitor/")
+	viper.AddConfigPath("/etc/dnsmasq-manager/")
 	viper.AddConfigPath(".")
 	viper.SetConfigType("yaml")
 	viper.SetConfigName(configName)
-	viper.SetEnvPrefix("PHM") // PHM stands for Pi-Hole Manager
+	viper.SetEnvPrefix("DMM") // DMM stands for (d)ns(m)asq (M)anager
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 	err := viper.ReadInConfig()

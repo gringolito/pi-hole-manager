@@ -1,4 +1,0 @@
-# Command line options for pi-hole-manager.service
-# See also /etc/pi-hole-manager/config.yaml
-
-ARGS=""
