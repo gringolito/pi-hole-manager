@@ -1,6 +1,6 @@
 [Unit]
-Description=Pi-Hole Manager API
-Documentation=https://github.com/gringolito/pi-hole-manager
+Description=Dnsmasq Manager API
+Documentation=https://github.com/gringolito/dnsmasq-manager
 
 # This unit is supposed to indicate when network functionality is available, but it is only
 # very weakly defined what that is supposed to mean, with one exception: at shutdown, a unit
@@ -14,14 +14,14 @@ StartLimitIntervalSec=60s
 
 [Service]
 Type=simple
-EnvironmentFile=/etc/default/pi-hole-manager
+EnvironmentFile=/etc/default/dnsmasq-manager
 User=root
 Group=root
-ExecStart=/usr/bin/pi-hole-manager $ARGS
+ExecStart=/usr/bin/dnsmasq-manager ${ARGS}
 StandardOutput=journal
 Restart=on-failure
 RestartSec=5s
-ExecReload=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP ${MAINPID}
 
 # Use graceful shutdown with a reasonable timeout
 TimeoutStopSec=10s

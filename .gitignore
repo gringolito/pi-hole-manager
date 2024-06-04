@@ -30,7 +30,7 @@ go.work
 dist/
 
 # Application binary
-pi-hole-manager
+./dnsmasq-manager
 
 # Manual testing configuration files
 *.conf

@@ -5,8 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/gringolito/pi-hole-manager/api/middleware/fiberslog"
-	"github.com/gringolito/pi-hole-manager/config"
+	"github.com/gringolito/dnsmasq-manager/api/middleware/fiberslog"
+	"github.com/gringolito/dnsmasq-manager/config"
 	"golang.org/x/exp/slog"
 )
 

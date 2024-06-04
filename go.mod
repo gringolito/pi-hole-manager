@@ -1,4 +1,4 @@
-module github.com/gringolito/pi-hole-manager
+module github.com/gringolito/dnsmasq-manager
 
 go 1.20
 

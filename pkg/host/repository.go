@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gringolito/pi-hole-manager/pkg/model"
+	"github.com/gringolito/dnsmasq-manager/pkg/model"
 	"golang.org/x/exp/slog"
 )
 

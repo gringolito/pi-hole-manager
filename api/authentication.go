@@ -9,8 +9,8 @@ import (
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gringolito/pi-hole-manager/api/presenter"
-	"github.com/gringolito/pi-hole-manager/config"
+	"github.com/gringolito/dnsmasq-manager/api/presenter"
+	"github.com/gringolito/dnsmasq-manager/config"
 	"golang.org/x/exp/slog"
 )
 

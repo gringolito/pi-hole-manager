@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/gringolito/pi-hole-manager/api/presenter"
+	"github.com/gringolito/dnsmasq-manager/api/presenter"
 	"golang.org/x/exp/slices"
 	"golang.org/x/exp/slog"
 )
