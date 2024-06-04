@@ -245,6 +245,10 @@ components:
           type: string
           format: hostname
           example: foo.bar
+        Interface:
+          type: string
+          format: printascii
+          example: eno0
 
     FieldError:
       type: object

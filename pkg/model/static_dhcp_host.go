@@ -12,6 +12,7 @@ type StaticDhcpHost struct {
 	MacAddress net.HardwareAddr
 	IPAddress  net.IP
 	HostName   string
+	Interface  string
 }
 
 var ErrInvalidDHCPHost = errors.New("invalid DHCP host entry")
